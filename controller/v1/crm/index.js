@@ -1,4 +1,3 @@
-const { login } = require("./auth");
 const {
   listUniveristy,
   listCollege,
@@ -9,7 +8,6 @@ const {
 } = require("./crm");
 
 module.exports = {
-  login,
   listUniveristy,
   listCollege,
   listInstitution,

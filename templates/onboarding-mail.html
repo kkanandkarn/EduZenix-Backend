@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Eduzenix Invitation Email</title>
+    <style>
+        /* Reset & base */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #0f111a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e6ff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Container */
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: linear-gradient(135deg, #1b1f38, #11131e);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(30, 50, 100, 0.7);
+            padding: 40px 48px;
+        }
+
+        /* Header */
+        .header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: #5a84ff;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Greeting */
+        .greeting {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #a5b1ff;
+        }
+
+        /* Main Text */
+        .main-text {
+            font-size: 1rem;
+            margin-bottom: 28px;
+            color: #c5cafc;
+        }
+
+        /* Highlight */
+        .highlight {
+            color: #5a84ff;
+            font-weight: 700;
+        }
+
+        /* Button */
+        .btn-join {
+            display: inline-block;
+            background: #5a84ff;
+            color: #fff;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 40px;
+            box-shadow: 0 6px 15px rgba(90, 132, 255, 0.5);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            letter-spacing: 0.05em;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .btn-join:hover {
+            background: #718cff;
+            box-shadow: 0 10px 20px rgba(113, 140, 255, 0.7);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #6e7391;
+            border-top: 1px solid #1f2245;
+            padding-top: 20px;
+            text-align: center;
+            font-family: 'Segoe UI', sans-serif;
+            user-select: none;
+        }
+
+        .footer img {
+            margin-top: 12px;
+            max-width: 80px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Note */
+        .note {
+            font-size: 0.8rem;
+            color: #4b4f6a;
+            margin-top: 24px;
+            font-style: italic;
+            user-select: none;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 640px) {
+            .email-container {
+                margin: 20px;
+                padding: 32px 24px;
+            }
+
+            .btn-join {
+                width: 100%;
+                text-align: center;
+                padding: 16px 0;
+            }
+        }
+    </style>
+    <!-- Optional: import futuristic font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="email-container" role="main">
+        <!-- <div class="header">EDUZENIX INVITE</div> -->
+
+        <p class="greeting">Hi <span class="header">{{organisation_name}}</span>,</p>
+
+        <p class="main-text">
+            There’s a silent shift happening in education.<br /><br />
+            Forward-thinking institutions are moving faster, operating smoother, and making better decisions — all
+            because they chose to evolve.<br /><br />
+            They chose <span class="highlight">Eduzenix</span>.<br /><br />
+            Eduzenix isn’t just another software. It’s the backbone of modern institutions.<br />
+            The quiet engine behind seamless operations, better control, and smarter growth.<br /><br />
+            If you’re still juggling spreadsheets, chasing updates, or stuck in outdated systems — you're already
+            behind.<br /><br />
+            This is your moment to lead.<br /><br />
+            No long processes. No tech headaches. Just a simple step toward running your institution the way today
+            demands.<br /><br />
+            ⏳ Institutions across the country are switching to Eduzenix.<br />
+            You don’t want to be the one catching up later.
+        </p>
+
+        <a href="{{onboarding_link}}" class="btn-join" role="button" aria-label="Join Eduzenix Now"
+            style="color:#ffffff;">Join Eduzenix</a>
+
+        <div class="footer">
+            <p>See you on the inside,</p>
+            <img src="{{eduzenix_logo}}" alt="Eduzenix Logo" />
+            <p class="note">
+                <strong>Note:</strong> For security purposes, please ensure this invite is accessed by authorized staff
+                only.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,4 +1,6 @@
-const auth = require("./auth");
+const { Auth } = require("./auth");
+const { Crm } = require("./crm");
 module.exports = {
-  auth,
+  Auth,
+  Crm,
 };

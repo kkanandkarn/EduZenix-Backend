@@ -25,6 +25,9 @@
     "moment-timezone": "^0.5.48",
     "morgan": "^1.10.0",
     "mysql2": "^3.14.1",
+    "nanoid": "^5.1.5",
+    "nodemailer": "^7.0.3",
+    "pagi-help": "^1.0.36",
     "sequelize": "^6.37.7",
     "xlsx": "^0.18.5"
   }

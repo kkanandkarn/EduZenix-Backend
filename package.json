@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start:dev": "set NODE_ENV=development&&nodemon ./bin/www",
+    "start_dev": "set NODE_ENV=development&&nodemon ./bin/www",
     "start:prod": "export NODE_ENV=production&&nodemon ./bin/www",
     "test:dev": "set NODE_ENV=development&&mocha test/*.js --exit",
     "test": "echo \"Error: no test specified\" && exit 1"

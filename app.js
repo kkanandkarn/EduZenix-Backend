@@ -11,7 +11,7 @@ const { FILE_UPLOAD_PATH, FILE_GENERATED_PATH } = process.env;
 
 const { validator, validateToken, handleError } = require("./middleware");
 
-const { v1 } = require("./routes");
+const { v1, cdn } = require("./routes");
 const sequelize = require("./config/db");
 
 const app = express();

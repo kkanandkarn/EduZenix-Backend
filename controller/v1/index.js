@@ -1,4 +1,5 @@
 const { login } = require("./auth");
+const { uploadFile, getCdnFile } = require("./cdn");
 const {
   listUniveristy,
   listCollege,
@@ -16,4 +17,6 @@ module.exports = {
   generateOnboardingLink,
   getOnboardingData,
   sendOnboardingEmail,
+  uploadFile,
+  getCdnFile,
 };

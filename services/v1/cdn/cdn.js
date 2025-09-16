@@ -5,19 +5,18 @@ const { getTenant } = require("../../../utils/helper");
 const { uploadToCloud } = require("../../../utils/upload");
 const { ErrorHandler } = require("../../../helper");
 const { NOT_FOUND } = require("../../../helper/status-codes");
-const { default: axios } = require("axios");
 
 class Cdn {
   async uploadFile(body, user, files) {
     try {
-      let uploadDir = "guest";
+      let uploadDir = "profile";
       let userId = null;
       if (user.isAuth) {
         const tenant = await getTenant(user.tenantId);
         uploadDir = tenant.url_slug;
         userId = user.userId;
       }
-      const { fileId, fileUrl, maskUrl } = await uploadToCloud(
+      const { fileId, fileUrl } = await uploadToCloud(
         files,
         "document",
         uploadDir
@@ -50,8 +49,7 @@ class Cdn {
 
       return file.file_url;
     } catch (error) {
-      console.error("File view error:", error);
-      res.status(500).send("Error loading file");
+      throwError(error);
     }
   }
 }

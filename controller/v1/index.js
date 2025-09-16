@@ -8,6 +8,7 @@ const {
   getOnboardingData,
   sendOnboardingEmail,
 } = require("./crm");
+const { requestOtp } = require("./Otp");
 
 module.exports = {
   login,
@@ -19,4 +20,5 @@ module.exports = {
   sendOnboardingEmail,
   uploadFile,
   getCdnFile,
+  requestOtp,
 };

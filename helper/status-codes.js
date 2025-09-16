@@ -8,4 +8,5 @@ module.exports = {
   NOT_FOUND: 404,
   PERMISSION_DENIED: 501,
   FORBIDDEN: 403,
+  TOO_MANY_REQUEST: 429,
 };

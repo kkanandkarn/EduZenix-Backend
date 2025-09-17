@@ -1,2 +1,2 @@
 # EduZenix-Backend
-A Complete ERP solution for Univeristy, College and other Educational Organisations.
+A Complete ERP solution for Univeristy, College and other Educational Institutions.

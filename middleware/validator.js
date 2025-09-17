@@ -4,7 +4,7 @@ const { ErrorHandler } = require("../helper");
 const { statusCodes } = require("../helper");
 
 const { BAD_GATEWAY } = statusCodes;
-const { v1: schemas } = require("../schema");
+const { v1: schemas } = require("../validation-schema");
 
 /**
  *

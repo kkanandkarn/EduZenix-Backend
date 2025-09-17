@@ -12,6 +12,15 @@ const requestOtp = async (req, res, next) => {
     next(error);
   }
 };
+const verifyOtp = async (req, res, next) => {
+  try {
+    const data = await new Otp().verifyOtp(req.body);
+    return data;
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   requestOtp,
+  verifyOtp,
 };

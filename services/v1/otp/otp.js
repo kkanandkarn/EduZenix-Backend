@@ -5,6 +5,7 @@ const {
   getMultipleGlobalVariable,
   generateOtp,
   getGlobalVariable,
+  getTenant,
 } = require("../../../utils/helper");
 const { ErrorHandler } = require("../../../helper");
 const {
@@ -17,52 +18,32 @@ class Otp {
   async requestOtp(body) {
     try {
       const { otpIdentifier, otpType, otpReason } = body;
-
-      // Fetch required global variables (OTP_LIMIT, SUCCESS_MESSAGES, ERROR_MESSAGES)
-      const otpVariables = await getMultipleGlobalVariable([
-        "OTP_LIMIT",
-        "SUCCESS_MESSAGES",
-        "ERROR_MESSAGES",
-        "TEST_OTP_DATA",
-        "OTP_REASON_FUNCTIONS",
-      ]);
-
-      // Extract OTP limit and messages
-      const otpLimitVar = otpVariables.find(
-        (v) => v.name === "OTP_LIMIT"
-      )?.data;
-      const successMessages = otpVariables.find(
-        (v) => v.name === "SUCCESS_MESSAGES"
-      )?.data.otp_sent;
-      const errorMessages = otpVariables.find(
-        (v) => v.name === "ERROR_MESSAGES"
-      )?.data;
-      const testOtpData = otpVariables.find(
-        (v) => v.name === "TEST_OTP_DATA"
-      )?.data;
+      const otpLimit = await getGlobalVariable("OTP_LIMIT");
+      const errorMessages = await getGlobalVariable("ERROR_MESSAGES");
+      const successMessages = await getGlobalVariable("SUCCESS_MESSAGES");
+      const maxOtpAllowed = otpLimit.max_otp_allowed;
 
       if (otpReason === "login") {
         await new OtpHelper().validateUserAccount(otpIdentifier, errorMessages);
       }
 
-      const maxOtpAllowed = otpLimitVar.max_otp_allowed;
-      const maxOtpAllowedMsg = errorMessages.otp_limit_exceed[otpReason];
-
-      // Check if user has already requested OTP withing 24 hour
       const [otpCountRecord] = await sequelize.query(
         `SELECT id, count FROM otp_count WHERE otp_identifier = ? AND otp_reason = ? AND last_otp_sent >= (NOW() - INTERVAL 24 HOUR) limit 1`,
         {
           replacements: [otpIdentifier, otpReason],
           type: QueryTypes.SELECT,
-        }
+        },
       );
 
-      // Checking if user exceeds the limit of max otp allowed
       if (otpCountRecord && otpCountRecord.count >= maxOtpAllowed) {
-        throw new ErrorHandler(TOO_MANY_REQUEST, maxOtpAllowedMsg);
+        throw new ErrorHandler(
+          TOO_MANY_REQUEST,
+          errorMessages["otp_limit_exceed"][otpReason],
+        );
       }
 
-      //IF otp identifier is not whitelisted for tesing Generate 4-digit OTP
+      const testOtpData = await getGlobalVariable("TEST_OTP_DATA");
+
       let otp;
       if (testOtpData.TEST_CONTACT.includes(otpIdentifier)) {
         otp = testOtpData.TEST_OTP;
@@ -70,24 +51,22 @@ class Otp {
         otp = generateOtp(4);
       }
 
-      // Insert OTP into table
       await sequelize.query(
         `INSERT INTO otp (otp_identifier, otp, otp_type, otp_reason, created_at, updated_at, expired_at)
          VALUES (?, ?, ?, ?, NOW(),NOW(), DATE_ADD(NOW(), INTERVAL 10 MINUTE))`,
         {
           replacements: [otpIdentifier, otp, otpType, otpReason],
           type: QueryTypes.INSERT,
-        }
+        },
       );
 
-      // Update OTP count: insert new record or increment count if exists
       if (otpCountRecord) {
         await sequelize.query(
           `update otp_count set count = count + 1, last_otp_sent = NOW() where id=?`,
           {
             replacements: [otpCountRecord.id],
             type: QueryTypes.UPDATE,
-          }
+          },
         );
       } else {
         await sequelize.query(
@@ -95,13 +74,12 @@ class Otp {
           {
             replacements: [otpIdentifier, otpReason],
             type: QueryTypes.INSERT,
-          }
+          },
         );
       }
 
-      // Return success message for the requested OTP type
       return {
-        message: successMessages[otpType] || "OTP sent successfully",
+        message: successMessages["otp_sent"][otpType],
       };
     } catch (error) {
       throwError(error);
@@ -111,21 +89,11 @@ class Otp {
     try {
       const { otpIdentifier, otpType, otpReason, otp } = body;
 
-      // Fetch required global variables (OTP_LIMIT, "ERROR_MESSAGES")
-      const otpVariables = await getMultipleGlobalVariable([
-        "OTP_LIMIT",
-        "ERROR_MESSAGES",
-      ]);
+      const otpLimit = await getGlobalVariable("OTP_LIMIT");
+      const errorMessages = await getGlobalVariable("ERROR_MESSAGES");
+      const successMessages = await getGlobalVariable("SUCCESS_MESSAGES");
 
-      // Extract OTP limit and messages
-      const otpLimitVar = otpVariables.find(
-        (v) => v.name === "OTP_LIMIT"
-      )?.data;
-      const errorMessages = otpVariables.find(
-        (v) => v.name === "ERROR_MESSAGES"
-      )?.data;
-
-      const maxAttemptAllowed = otpLimitVar.max_attempt_allowed;
+      const maxAttemptAllowed = otpLimit.max_attempt_allowed;
 
       // Fetching the last otp sent data with an condition of not expired
       const [otpData] = await sequelize.query(
@@ -133,13 +101,13 @@ class Otp {
         {
           replacements: [otpIdentifier, otpType, otpReason],
           type: QueryTypes.SELECT,
-        }
+        },
       );
 
       if (!otpData) {
         throw new ErrorHandler(
           BAD_GATEWAY,
-          errorMessages["no_valid_otp_found"]
+          errorMessages["no_valid_otp_found"],
         );
       }
 
@@ -148,7 +116,7 @@ class Otp {
       if (attempt > maxAttemptAllowed) {
         throw new ErrorHandler(
           BAD_GATEWAY,
-          errorMessages["maximum_otp_attempt_reached"]
+          errorMessages["maximum_otp_attempt_reached"],
         );
       }
       const generatedOtp = otpData.otp;
@@ -160,7 +128,7 @@ class Otp {
           {
             replacements: [otpData.id],
             type: QueryTypes.UPDATE,
-          }
+          },
         );
         throw new ErrorHandler(BAD_GATEWAY, errorMessages["incorrect_otp"]);
       }
@@ -171,7 +139,7 @@ class Otp {
         {
           replacements: [otpData.id],
           type: QueryTypes.UPDATE,
-        }
+        },
       );
       if (otpReason === "login") {
         return await new OtpHelper().loginWithOtp(otpIdentifier);

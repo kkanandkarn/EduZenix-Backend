@@ -1,0 +1,27 @@
+{
+  "name": "eduzenix-backend",
+  "version": "1.0.0",
+  "description": "A SaaS ERP for Univerisy, College and Educational Organisations",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anand Kumar Karn",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.1",
+    "cookie-parser": "^1.4.7",
+    "crypto": "^1.0.1",
+    "express": "^5.1.0",
+    "formidable": "^3.5.4",
+    "helmet": "^8.1.0",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.6.0",
+    "morgan": "^1.10.1",
+    "nodemailer": "^7.0.6",
+    "prettier": "^3.6.2",
+    "util": "^0.12.5"
+  }
+}

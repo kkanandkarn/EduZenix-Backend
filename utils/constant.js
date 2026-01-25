@@ -8,6 +8,13 @@ module.exports = {
   SUCCESS: "success",
   FAILURE: "failure",
   SERVER_ERROR_MESSAGE: "Internal server error",
+  STATUS: {
+    ACTIVE: "Active",
+    HOLD: "Hold",
+    SUSPENDED: "Suspended",
+    INACTIVE: "Inactive",
+    EXPIRED: "Expired",
+  },
   RESOURCES: {},
   PERMS: {},
 };

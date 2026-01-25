@@ -4,13 +4,14 @@ const path = require("path");
 const cors = require("cors");
 require("dotenv").config({ path: `.env`, quiet: true });
 require("moment-timezone")().tz("Asia/Kolkata");
-const { validateToken, handleError } = require("./middleware");
+const { validateToken, handleError, validator } = require("./middleware");
 const sequelize = require("./config/db");
 const app = express();
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const { FAILURE } = require("./utils/constant");
 const { TOO_MANY_REQUESTS } = require("./helper/status-codes");
+const { v1 } = require("./routes");
 
 app.set("view engine", "ejs");
 
@@ -43,7 +44,8 @@ const apiLimiter = rateLimit({
 });
 
 app.use(validateToken);
-app.use("/v1", apiLimiter);
+app.use(validator);
+app.use("/v1", apiLimiter, v1);
 
 app.use((err, req, res, next) => {
   handleError(err, res);

@@ -35,6 +35,7 @@ const dispatcher = async (
     }
 
     const data = await func(req, res, next);
+
     if (data) {
       return res
         .status(OK)

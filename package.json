@@ -20,7 +20,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
-    "camelcase-keys": "^10.0.2",
+    "camelcase-keys": "^7.0.2",
     "cls-hooked": "^4.2.2",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
@@ -29,6 +29,7 @@
     "express-rate-limit": "^8.2.1",
     "formidable": "^3.5.4",
     "helmet": "^8.1.0",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "moment-timezone": "^0.6.0",
     "mysql2": "^3.16.1",

@@ -1,0 +1,38 @@
+{
+  "name": "eduzenix-backend",
+  "version": "1.0.0",
+  "description": "A comprehensive SaaS ERP platform tailored for universities, colleges, and educational institutions to streamline operations and enhance efficiency.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "set NODE_ENV=development&&nodemon ./bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkanandkarn/EduZenix-Backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kkanandkarn/EduZenix-Backend/issues"
+  },
+  "homepage": "https://github.com/kkanandkarn/EduZenix-Backend#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.2",
+    "camelcase-keys": "^10.0.2",
+    "cls-hooked": "^4.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "formidable": "^3.5.4",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "moment-timezone": "^0.6.0",
+    "mysql2": "^3.16.1",
+    "nodemailer": "^7.0.12",
+    "sequelize": "^6.37.7"
+  }
+}

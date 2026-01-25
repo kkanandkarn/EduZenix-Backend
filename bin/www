@@ -1,0 +1,119 @@
+#!/usr/bin/env node
+const cluster = require("cluster");
+const os = require("os");
+const http = require("http");
+const debug = require("debug")("xley:server");
+const app = require("../app");
+
+const PORT = normalizePort(process.env.PORT || "8000");
+const WORKERS =
+  process.env.NODE_ENV === "development" ? 1 : Math.min(os.cpus().length, 4);
+
+let server;
+
+const KEEP_ALIVE_MS = 5000;
+const HEADERS_TIMEOUT_MS = KEEP_ALIVE_MS + 1000;
+
+function normalizePort(val) {
+  const p = parseInt(val, 10);
+  if (Number.isNaN(p)) return val;
+  if (p >= 0) return p;
+  return false;
+}
+
+if (cluster.isPrimary) {
+  console.log(`Primary ${process.pid} starting ${WORKERS} workers`);
+
+  for (let i = 0; i < WORKERS; i++) cluster.fork();
+
+  const stopPrimary = async (signal) => {
+    console.log(`Primary got ${signal}, signaling workers...`);
+
+    for (const id in cluster.workers) {
+      cluster.workers[id].process.kill("SIGTERM");
+    }
+
+    cluster.disconnect(() => {
+      console.log("All workers disconnected. Exiting primary.");
+      process.exit(0);
+    });
+
+    setTimeout(() => process.exit(0), 10000).unref();
+  };
+
+  process.on("SIGTERM", () => stopPrimary("SIGTERM"));
+  process.on("SIGINT", () => stopPrimary("SIGINT"));
+
+  cluster.on("exit", (worker, code, signal) => {
+    console.log(`Worker ${worker.process.pid} exited (${signal || code})`);
+  });
+} else {
+  // === Worker ===
+  app.set("port", PORT);
+  server = http.createServer(app);
+
+  server.keepAliveTimeout = KEEP_ALIVE_MS;
+  server.headersTimeout = HEADERS_TIMEOUT_MS;
+
+  server.listen(PORT, () => {
+    console.log(
+      `Worker ${process.pid} listening on ${PORT} (${process.env.NODE_ENV})`,
+    );
+  });
+
+  server.on("error", onError);
+  server.on("listening", onListening);
+
+  const cleanupResources = async () => {
+    // Close DB / Redis / queues here if used
+    await new Promise((resolve) => server.close(resolve));
+  };
+
+  const graceful = async (signal) => {
+    console.log(
+      `Worker ${process.pid} got ${signal} — starting graceful shutdown`,
+    );
+
+    const FORCE_EXIT_MS = 8000;
+    const hardTimer = setTimeout(() => {
+      console.warn(`Worker ${process.pid}: force exit`);
+      process.exit(0);
+    }, FORCE_EXIT_MS);
+    hardTimer.unref();
+
+    try {
+      await cleanupResources();
+      clearTimeout(hardTimer);
+      console.log(`Worker ${process.pid} shutdown complete`);
+      process.exit(0);
+    } catch (err) {
+      console.error("Graceful shutdown error:", err);
+      process.exit(0);
+    }
+  };
+
+  process.on("SIGTERM", () => graceful("SIGTERM"));
+  process.on("SIGINT", () => graceful("SIGINT"));
+}
+
+function onError(error) {
+  if (error.syscall !== "listen") throw error;
+
+  const bind = typeof PORT === "string" ? "Pipe " + PORT : "Port " + PORT;
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+    default:
+      throw error;
+  }
+}
+
+function onListening() {
+  const addr = server.address();
+  const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+}

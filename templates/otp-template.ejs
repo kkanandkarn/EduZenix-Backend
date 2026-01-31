@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Email Template</title>
+    <style>
+        /* Reset styles for email compatibility */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .email-header {
+            background-color: #1976d2;
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .email-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .email-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .email-content {
+            padding: 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+        
+        .message {
+            margin-bottom: 30px;
+            color: #555555;
+            font-size: 16px;
+        }
+        
+        .otp-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        
+        .otp-label {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #555555;
+        }
+        
+        .otp-code {
+            display: inline-block;
+            background-color: #f0f8ff;
+            border: 2px dashed #1976d2;
+            border-radius: 8px;
+            padding: 18px 30px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            color: #1976d2;
+            margin: 10px 0;
+        }
+        
+        .otp-expiry {
+            font-size: 14px;
+            color: #777777;
+            margin-top: 15px;
+        }
+        
+        .instructions {
+            background-color: #f9f9f9;
+            border-left: 4px solid #1976d2;
+            padding: 18px;
+            margin: 30px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .instructions h3 {
+            color: #333333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            color: #555555;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .email-footer {
+            background-color: #f5f5f5;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #777777;
+            border-top: 1px solid #eeeeee;
+        }
+        
+        .email-footer a {
+            color: #1976d2;
+            text-decoration: none;
+        }
+        
+        @media screen and (max-width: 600px) {
+            .email-container {
+                border-radius: 0;
+            }
+            
+            .email-header, .email-content, .email-footer {
+                padding: 20px;
+            }
+            
+            .otp-code {
+                font-size: 26px;
+                letter-spacing: 6px;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header section -->
+        <div class="email-header">
+            <h1>Verification Code</h1>
+            <p>Secure One-Time Password for your account</p>
+        </div>
+        
+        <!-- Content section -->
+        <div class="email-content">
+            <p class="greeting">Hello,</p>
+            
+            <p class="message">
+                You've requested a one-time password (OTP) to verify your identity. 
+                Please use the following verification code to complete your action.
+            </p>
+            
+            <!-- OTP Display -->
+            <div class="otp-container">
+                <div class="otp-label">Your verification code is:</div>
+                <div class="otp-code" id="otp-code"><%= otp %></div>
+                <div class="otp-expiry">
+                    This code will expire in <strong>10 minutes</strong>.
+                </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="instructions">
+                <h3>For your security:</h3>
+                <ul>
+                    <li>Do not share this code with anyone</li>
+                    <li>This code is valid for one-time use only</li>
+                    <li>If you didn't request this code, please ignore this email</li>
+                    <li>Contact support immediately if you suspect any unauthorized activity</li>
+                </ul>
+            </div>
+            
+            <p class="message">
+                If you're having trouble with the code, you can request a new one from the 
+                application or contact our support team for assistance.
+            </p>
+            
+            <p class="message">
+                Best regards,<br>
+                <strong>EduZenix Team</strong>
+            </p>
+        </div>
+        
+        <!-- Footer section -->
+        <div class="email-footer">
+            <p>
+                This is an automated message, please do not reply to this email.<br>
+                Need help? Contact our support team
+            </p>
+            <p style="margin-top: 15px;">
+                &copy; <%= year %> EduZenix. All rights reserved.<br>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

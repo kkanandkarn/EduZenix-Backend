@@ -1,5 +1,7 @@
 const nodemailer = require("nodemailer");
 const { throwError } = require("./helper");
+const sequelize = require("../config/db");
+const { QueryTypes } = require("sequelize");
 
 let transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
@@ -11,12 +13,9 @@ let transporter = nodemailer.createTransport({
 
 const sendMail = async (email, subject, html) => {
   if (process.env.NODE_ENV !== "production") {
-    const isWhiteListedEmail = await checkWhitelistedEmail(email, db);
+    const isWhiteListedEmail = await checkWhitelistedEmail(email);
     if (!isWhiteListedEmail) {
-      throw new ErrorHandler(
-        UNAUTHORIZED,
-        "Your email is not whitelisted. Please contract administrator",
-      );
+      return { error: "This email is not whitelisted." };
     }
   }
 
@@ -40,11 +39,14 @@ const sendMail = async (email, subject, html) => {
 };
 const checkWhitelistedEmail = async (email) => {
   try {
-    // const whitelistedEmail = await db.WhitelistEmail.findUnique({
-    //   where: { email: email },
-    // });
-    // return !!whitelistedEmail;
-    return false;
+    const [whitelistedEmail] = await sequelize.query(
+      `select id from whitelist_email where status = 'Active' and email=?`,
+      {
+        replacements: [email],
+        type: QueryTypes.SELECT,
+      },
+    );
+    return !!whitelistedEmail;
   } catch (e) {
     throwError(e);
   }

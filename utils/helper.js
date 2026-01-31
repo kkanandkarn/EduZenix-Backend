@@ -48,6 +48,17 @@ const transformVariable = (variable, defaultValue = null) => {
   return variable;
 };
 
+const getConstant = async (name) => {
+  const [constant] = await sequelize.query(
+    `select data from constant where status = 'Active' and name=?`,
+    {
+      replacements: [name],
+      type: QueryTypes.SELECT,
+    },
+  );
+  return constant?.data;
+};
+
 const getTenant = async (tenantId) => {
   try {
     const [tenant] = await sequelize.query(
@@ -96,9 +107,35 @@ const getTenant = async (tenantId) => {
   }
 };
 
+const getRole = async (roleId) => {
+  try {
+    const [role] = await sequelize.query(
+      `select * from roles where id=? and status != 'Deleted'`,
+      {
+        replacements: [roleId],
+        type: QueryTypes.SELECT,
+      },
+    );
+    if (!role) {
+      throw new ErrorHandler(NOT_FOUND, "Role not found");
+    }
+    if (role.status === STATUS.SUSPENDED) {
+      throw new ErrorHandler(
+        FORBIDDEN,
+        "Your role has been suspended!. Please contact your administrator.",
+      );
+    }
+    return role;
+  } catch (error) {
+    throwError(error);
+  }
+};
+
 module.exports = {
   camelize,
   throwError,
   transformVariable,
   getTenant,
+  getConstant,
+  getRole,
 };

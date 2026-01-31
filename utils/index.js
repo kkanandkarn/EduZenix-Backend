@@ -4,6 +4,7 @@ const { camelize } = require("./helper");
 const { compare, hashPassword } = require("./hash");
 const { formidableUpload, scanFile } = require("./upload");
 const { sendMail } = require("./mail");
+const globalPermissions = require("./global-permissions");
 
 module.exports = {
   token,
@@ -13,4 +14,5 @@ module.exports = {
   hashPassword,
   formidableUpload,
   scanFile,
+  globalPermissions,
 };

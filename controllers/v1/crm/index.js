@@ -1,6 +1,5 @@
-const auth = require("./auth");
 const crm = require("./crm");
+
 module.exports = {
-  ...auth,
   ...crm,
 };

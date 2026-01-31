@@ -1,6 +1,7 @@
-const { statusCodes } = require("../helper");
+const { statusCodes, ErrorHandler } = require("../helper");
+const { FORBIDDEN } = require("../helper/status-codes");
 const { constant, camelize } = require("../utils");
-// const { matchPermission } = require("../utils/match-permission");
+const matchPermission = require("./match-permission");
 
 const { OK } = statusCodes;
 const { SUCCESS } = constant;
@@ -29,9 +30,14 @@ const dispatcher = async (
   stopPaths = [],
 ) => {
   try {
-    const { user } = req;
     if (resource && perm) {
-      //   await matchPermission(user, resource, perm);
+      const isPerm = await matchPermission(req, resource, perm);
+      if (!isPerm) {
+        throw new ErrorHandler(
+          FORBIDDEN,
+          "You do not have permission for this action.",
+        );
+      }
     }
 
     const data = await func(req, res, next);

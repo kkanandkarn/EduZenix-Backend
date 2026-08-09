@@ -1,0 +1,12 @@
+dist
+coverage
+node_modules
+src/generated
+prisma/migrations
+package-lock.json
+
+# Vendored agent skill docs installed by `prisma init` — not our source.
+.agents
+.claude
+.windsurf
+skills-lock.json

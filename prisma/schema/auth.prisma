@@ -1,0 +1,116 @@
+model Tenants {
+    id               String        @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    tenantName       String
+    tenantType       TenantType
+    pocName          String?
+    pocEmail         String?
+    pocContact       String?
+    packageStatus    PackageStatus
+    packageId        String?       @db.Uuid
+    packageStartAt   DateTime?
+    packageExpiredAt DateTime?
+    packages         Packages[]
+    status           AuthStatus
+    createdBy        String?       @db.Uuid
+    updatedBy        String?       @db.Uuid
+    createdAt        DateTime      @default(now())
+    updatedAt        DateTime      @updatedAt
+
+    creator Users? @relation("TenantCreatedBy", fields: [createdBy], references: [id])
+    updater Users? @relation("TenantUpdatedBy", fields: [updatedBy], references: [id])
+
+    crmUniversities      CrmUniversity[]
+    crmColleges          CrmCollege[]
+    crmOtherInstitutions CrmOtherInstitution[]
+    crmSchools           CrmSchool[]
+    roles                Roles[]
+    users                Users[]
+}
+
+model Packages {
+    id          String   @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    packageName String
+    packageData String
+    status      Status
+    createdBy   String?  @db.Uuid
+    updatedBy   String?  @db.Uuid
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    creator   Users?   @relation("PackageCreatedBy", fields: [createdBy], references: [id])
+    updater   Users?   @relation("PackageUpdatedBy", fields: [updatedBy], references: [id])
+    tenants   Tenants? @relation(fields: [tenantsId], references: [id])
+    tenantsId String?  @db.Uuid
+    users     Users?   @relation("PackageUser", fields: [usersId], references: [id])
+    usersId   String?  @db.Uuid
+}
+
+model Roles {
+    id              String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    roleName        String
+    roleKey         String?    @unique
+    roleDescription String?    @db.Text
+    totalUsers      Int        @default(0)
+    roleType        RoleType   @default(SYSTEM)
+    tenantId        String     @db.Uuid
+    tenant          Tenants    @relation(fields: [tenantId], references: [id])
+    status          AuthStatus @default(ACTIVE)
+    createdBy       String?    @db.Uuid
+    updatedBy       String?    @db.Uuid
+    createdAt       DateTime   @default(now())
+    updatedAt       DateTime   @updatedAt
+
+    creator Users?  @relation("RoleCreatedBy", fields: [createdBy], references: [id])
+    updater Users?  @relation("RoleUpdatedBy", fields: [updatedBy], references: [id])
+    users   Users[] @relation("UserRole")
+
+    @@index([roleKey])
+}
+
+model Users {
+    id           String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    firstName    String
+    lastName     String
+    email        String     @unique
+    password     String
+    roleId       String     @db.Uuid
+    requireMfa   Boolean    @default(false)
+    mfaSecret    String?
+    mfaCompleted Boolean    @default(false)
+    refreshToken String?
+    tenantId     String     @db.Uuid
+    tenant       Tenants    @relation(fields: [tenantId], references: [id])
+    status       AuthStatus @default(ACTIVE)
+    createdBy    String?    @db.Uuid
+    updatedBy    String?    @db.Uuid
+    lastLoginAt  DateTime?
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+
+    role    Roles  @relation("UserRole", fields: [roleId], references: [id])
+    creator Users? @relation("UserCreatedBy", fields: [createdBy], references: [id])
+    updater Users? @relation("UserUpdatedBy", fields: [updatedBy], references: [id])
+
+    createdRoles    Roles[]    @relation("RoleCreatedBy")
+    updatedRoles    Roles[]    @relation("RoleUpdatedBy")
+    createdUsers    Users[]    @relation("UserCreatedBy")
+    updatedUsers    Users[]    @relation("UserUpdatedBy")
+    createdTenants  Tenants[]  @relation("TenantCreatedBy")
+    updatedTenants  Tenants[]  @relation("TenantUpdatedBy")
+    createdPackages Packages[] @relation("PackageCreatedBy")
+    updatedPackages Packages[] @relation("PackageUpdatedBy")
+    packages        Packages[] @relation("PackageUser")
+
+    assignedCrmUniversities      CrmUniversity[]       @relation("CrmUniversityAssignedTo")
+    updatedCrmUniversities       CrmUniversity[]       @relation("CrmUniversityUpdatedBy")
+    assignedCrmColleges          CrmCollege[]          @relation("CrmCollegeAssignedTo")
+    updateCrmColleges            CrmCollege[]          @relation("CrmCollegeUpdatedBy")
+    assingedCrmOtherInstitutions CrmOtherInstitution[] @relation("CrmOtherInstitutionAssignedTo")
+    updatedCrmOtherInstitutions  CrmOtherInstitution[] @relation("CrmOtherInstitutionUpdatedBy")
+
+    assignedCrmSchools CrmSchool[] @relation("CrmSchoolAssignedTo")
+    createdCrmSchools  CrmSchool[] @relation("CrmSchoolCreatedBy")
+    updatedCrmSchools  CrmSchool[] @relation("CrmSchoolUpdatedBy")
+
+    @@index([email])
+}

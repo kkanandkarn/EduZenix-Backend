@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+*.log
+
+# Environment variables are kept out of version control; .env.example is the template.
+.env
+.env.*
+!.env.example
+
+# Prisma Client is generated from prisma/schema by `npm run prisma:generate`.
+/src/generated/prisma
+.agents
+.claude
+.windsurf

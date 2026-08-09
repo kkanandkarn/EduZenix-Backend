@@ -1,0 +1,15 @@
+// Root schema file: generator + datasource only.
+//
+// Models live in sibling `.prisma` files in this folder and are merged by the
+// Prisma CLI at validate/generate/migrate time. Add a new domain by dropping in
+// a new file here — no registration or import step is needed.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}

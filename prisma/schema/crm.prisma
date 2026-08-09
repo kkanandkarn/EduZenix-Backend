@@ -1,0 +1,109 @@
+model CrmUniversity {
+    id                  String               @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    aisheCode           String?
+    name                String
+    state               String
+    district            String
+    website             String?
+    yearOfEstablishment Int?
+    location            InstitutionLocation?
+    pocName             String?
+    pocEmail            String?
+    pocContact          String?
+    address             String?              @db.Text
+    tenantId            String?              @db.Uuid
+    tenant              Tenants?             @relation(fields: [tenantId], references: [id])
+    assignedTo          String?              @db.Uuid
+    assignedUser        Users?               @relation("CrmUniversityAssignedTo", fields: [assignedTo], references: [id])
+    isOnboarded         Boolean              @default(false)
+    status              CrmStatus
+    remarks             String?
+    updatedBy           String?              @db.Uuid
+    updator             Users?               @relation("CrmUniversityUpdatedBy", fields: [updatedBy], references: [id])
+    updatedAt           DateTime?
+}
+
+model CrmCollege {
+    id                  String                    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    aisheCode           String?
+    name                String
+    state               String
+    district            String
+    website             String?
+    yearOfEstablishment Int?
+    location            InstitutionLocation?
+    standAloneType      CrmCollegeStandAloneType?
+    management          CrmCollegeManagement?
+    universityName      String?
+    universityType      CrmUniversityType?
+    pocName             String?
+    pocEmail            String?
+    pocContact          String?
+    address             String?                   @db.Text
+    tenantId            String?                   @db.Uuid
+    tenant              Tenants?                  @relation(fields: [tenantId], references: [id])
+    assignedTo          String?                   @db.Uuid
+    assignedUser        Users?                    @relation("CrmCollegeAssignedTo", fields: [assignedTo], references: [id])
+    isOnboarded         Boolean                   @default(false)
+    status              CrmStatus
+    remarks             String?
+    updatedBy           String?                   @db.Uuid
+    updator             Users?                    @relation("CrmCollegeUpdatedBy", fields: [updatedBy], references: [id])
+    updatedAt           DateTime?
+}
+
+model CrmOtherInstitution {
+    id                  String                             @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    aisheCode           String?
+    name                String
+    state               String
+    district            String
+    website             String?
+    yearOfEstablishment Int?
+    location            InstitutionLocation?
+    standAloneType      CrmOtherInstitutionStandAloneType?
+    management          CrmOtherInstitutionManagement?
+    pocName             String?
+    pocEmail            String?
+    pocContact          String?
+    address             String?                            @db.Text
+    tenantId            String?                            @db.Uuid
+    tenant              Tenants?                           @relation(fields: [tenantId], references: [id])
+    assignedTo          String?                            @db.Uuid
+    assignedUser        Users?                             @relation("CrmOtherInstitutionAssignedTo", fields: [assignedTo], references: [id])
+    isOnboarded         Boolean                            @default(false)
+    status              CrmStatus
+    remarks             String?
+    updatedBy           String?                            @db.Uuid
+    updator             Users?                             @relation("CrmOtherInstitutionUpdatedBy", fields: [updatedBy], references: [id])
+    updatedAt           DateTime?
+}
+
+model CrmSchool {
+    id           String               @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    udiseCode    String?
+    name         String?
+    state        String?
+    district     String?
+    block        String?
+    cluster      String?
+    village      String?
+    panchayat    String?
+    location     InstitutionLocation?
+    pocName      String?
+    pocEmail     String?
+    pocContact   String?
+    address      String?              @db.Text
+    tenantId     String?              @db.Uuid
+    tenant       Tenants?             @relation(fields: [tenantId], references: [id])
+    assignedTo   String?              @db.Uuid
+    assignedUser Users?               @relation("CrmSchoolAssignedTo", fields: [assignedTo], references: [id])
+    isOnboarded  Boolean              @default(false)
+    status       CrmStatus
+    remarks      String?
+    createdBy    String?              @db.Uuid
+    creator      Users?               @relation("CrmSchoolCreatedBy", fields: [createdBy], references: [id])
+    updatedBy    String?              @db.Uuid
+    updator      Users?               @relation("CrmSchoolUpdatedBy", fields: [updatedBy], references: [id])
+    updatedAt    DateTime?
+}

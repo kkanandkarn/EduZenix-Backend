@@ -1,0 +1,25 @@
+{
+  // Editor / type-check config: covers everything, including the test files, so
+  // the IDE resolves `describe`/`jest` and reports the same errors CI does.
+  // Emitting the build output is tsconfig.build.json's job.
+  "compilerOptions": {
+    // Add "jest" back here once jest + @types/jest are actually installed;
+    // listing a type package that isn't present is a hard TS2688 error.
+    "types": ["node"],
+    "target": "ESNext",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": true
+  },
+  "ts-node": {
+    "files": true
+  },
+  // eslint.config.mts is deliberately excluded: it is native ESM run by ESLint,
+  // and `import.meta` is invalid under this file's "module": "commonjs".
+  "include": ["src/**/*", "test/**/*", "prisma.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

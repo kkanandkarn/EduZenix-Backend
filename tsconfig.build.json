@@ -1,0 +1,17 @@
+{
+  // Emit config used by `npm run build`, `npm run dev` and `npm run seed:dev`.
+  // Tests and their helpers are kept out of dist/, and jest globals stay out of
+  // the runtime type environment.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "noEmit": false
+  },
+  "ts-node": {
+    "files": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "src/**/*.test.ts"]
+}

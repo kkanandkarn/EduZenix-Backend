@@ -1,20 +1,20 @@
 model Tenants {
-    id               String        @id @default(dbgenerated("uuidv7()")) @db.Uuid
-    tenantName       String
+    id               String         @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    tenantName       String         @unique
     tenantType       TenantType
     pocName          String?
     pocEmail         String?
     pocContact       String?
-    packageStatus    PackageStatus
-    packageId        String?       @db.Uuid
+    packageStatus    PackageStatus?
+    packageId        String?        @db.Uuid
     packageStartAt   DateTime?
     packageExpiredAt DateTime?
-    packages         Packages[]
+    package          Packages?      @relation("TenantPackage", fields: [packageId], references: [id])
     status           AuthStatus
-    createdBy        String?       @db.Uuid
-    updatedBy        String?       @db.Uuid
-    createdAt        DateTime      @default(now())
-    updatedAt        DateTime      @updatedAt
+    createdBy        String?        @db.Uuid
+    updatedBy        String?        @db.Uuid
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime?      @updatedAt
 
     creator Users? @relation("TenantCreatedBy", fields: [createdBy], references: [id])
     updater Users? @relation("TenantUpdatedBy", fields: [updatedBy], references: [id])
@@ -25,6 +25,11 @@ model Tenants {
     crmSchools           CrmSchool[]
     roles                Roles[]
     users                Users[]
+
+    globalTenantPermissions GlobalTenantPermissions[] @relation("GlobalTenantPermissionTenant")
+
+    // back-reference for Packages.tenants/tenantsId relation
+    assignedPackages Packages[] @relation("PackageAssignedTenant")
 }
 
 model Packages {
@@ -39,40 +44,45 @@ model Packages {
 
     creator   Users?   @relation("PackageCreatedBy", fields: [createdBy], references: [id])
     updater   Users?   @relation("PackageUpdatedBy", fields: [updatedBy], references: [id])
-    tenants   Tenants? @relation(fields: [tenantsId], references: [id])
+    tenants   Tenants? @relation("PackageAssignedTenant", fields: [tenantsId], references: [id])
     tenantsId String?  @db.Uuid
     users     Users?   @relation("PackageUser", fields: [usersId], references: [id])
     usersId   String?  @db.Uuid
+
+    // back-reference for Tenants.packages/packageId relation
+    tenantsUsingPackage Tenants[] @relation("TenantPackage")
 }
 
 model Roles {
     id              String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
     roleName        String
-    roleKey         String?    @unique
     roleDescription String?    @db.Text
     totalUsers      Int        @default(0)
-    roleType        RoleType   @default(SYSTEM)
+    roleType        RoleType   @default(GENERAL)
     tenantId        String     @db.Uuid
     tenant          Tenants    @relation(fields: [tenantId], references: [id])
     status          AuthStatus @default(ACTIVE)
     createdBy       String?    @db.Uuid
     updatedBy       String?    @db.Uuid
     createdAt       DateTime   @default(now())
-    updatedAt       DateTime   @updatedAt
+    updatedAt       DateTime?  @updatedAt
 
     creator Users?  @relation("RoleCreatedBy", fields: [createdBy], references: [id])
     updater Users?  @relation("RoleUpdatedBy", fields: [updatedBy], references: [id])
     users   Users[] @relation("UserRole")
 
-    @@index([roleKey])
+    globalRolePermissions GlobalRolePermissions[] @relation("GlobalRolePermissionRole")
+
+    @@unique([roleName, tenantId, status])
+    @@index([tenantId])
 }
 
 model Users {
     id           String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
     firstName    String
     lastName     String
-    email        String     @unique
-    password     String
+    email        String
+    password     String?
     roleId       String     @db.Uuid
     requireMfa   Boolean    @default(false)
     mfaSecret    String?
@@ -80,12 +90,13 @@ model Users {
     refreshToken String?
     tenantId     String     @db.Uuid
     tenant       Tenants    @relation(fields: [tenantId], references: [id])
+    userType     UserType   @default(GENERAL)
     status       AuthStatus @default(ACTIVE)
     createdBy    String?    @db.Uuid
     updatedBy    String?    @db.Uuid
     lastLoginAt  DateTime?
     createdAt    DateTime   @default(now())
-    updatedAt    DateTime   @updatedAt
+    updatedAt    DateTime?  @updatedAt
 
     role    Roles  @relation("UserRole", fields: [roleId], references: [id])
     creator Users? @relation("UserCreatedBy", fields: [createdBy], references: [id])
@@ -101,6 +112,11 @@ model Users {
     updatedPackages Packages[] @relation("PackageUpdatedBy")
     packages        Packages[] @relation("PackageUser")
 
+    createdGlobalRolePermissions   GlobalRolePermissions[]   @relation("GlobalRolePermissionCreatedBy")
+    updatedGlobalRolePermissions   GlobalRolePermissions[]   @relation("GlobalRolePermissionUpdatedBy")
+    createdGlobalTenantPermissions GlobalTenantPermissions[] @relation("GlobalTenantPermissionCreatedBy")
+    updatedGlobalTenantPermissions GlobalTenantPermissions[] @relation("GlobalTenantPermissionUpdatedBy")
+
     assignedCrmUniversities      CrmUniversity[]       @relation("CrmUniversityAssignedTo")
     updatedCrmUniversities       CrmUniversity[]       @relation("CrmUniversityUpdatedBy")
     assignedCrmColleges          CrmCollege[]          @relation("CrmCollegeAssignedTo")
@@ -112,5 +128,67 @@ model Users {
     createdCrmSchools  CrmSchool[] @relation("CrmSchoolCreatedBy")
     updatedCrmSchools  CrmSchool[] @relation("CrmSchoolUpdatedBy")
 
+    @@unique([email, tenantId, status])
     @@index([email])
+}
+
+model GlobalPermissionMaster {
+    id             String               @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    permissionName String
+    parent         String
+    module         String
+    permissionType GlobalPermissionType @default(GENERAL)
+    displayName    String?
+    description    String?              @db.Text
+    status         Status               @default(ACTIVE)
+    createdBy      String               @default("SYSTEM")
+    updatedBy      String               @default("SYSTEM")
+    createdAt      DateTime             @default(now())
+    updatedAt      DateTime?            @updatedAt
+
+    globalRolePermissions   GlobalRolePermissions[]   @relation("GlobalRolePermissionPermission")
+    globalTenantPermissions GlobalTenantPermissions[] @relation("GlobalTenantPermissionPermission")
+
+    @@unique([permissionName, parent])
+    @@index([permissionName, parent])
+}
+
+model GlobalTenantPermissions {
+    id           String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    tenantId     String    @db.Uuid
+    permissionId String    @db.Uuid
+    status       Status    @default(ACTIVE)
+    createdBy    String?   @db.Uuid
+    updatedBy    String?   @db.Uuid
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime? @updatedAt
+
+    tenant     Tenants                @relation("GlobalTenantPermissionTenant", fields: [tenantId], references: [id])
+    permission GlobalPermissionMaster @relation("GlobalTenantPermissionPermission", fields: [permissionId], references: [id])
+    creator    Users?                 @relation("GlobalTenantPermissionCreatedBy", fields: [createdBy], references: [id])
+    updater    Users?                 @relation("GlobalTenantPermissionUpdatedBy", fields: [updatedBy], references: [id])
+
+    @@unique([tenantId, permissionId])
+    @@index([tenantId])
+    @@index([tenantId, permissionId])
+}
+
+model GlobalRolePermissions {
+    id           String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    roleId       String    @db.Uuid
+    permissionId String    @db.Uuid
+    status       Status    @default(ACTIVE)
+    createdBy    String?   @db.Uuid
+    updatedBy    String?   @db.Uuid
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime? @updatedAt
+
+    role       Roles                  @relation("GlobalRolePermissionRole", fields: [roleId], references: [id])
+    permission GlobalPermissionMaster @relation("GlobalRolePermissionPermission", fields: [permissionId], references: [id])
+    creator    Users?                 @relation("GlobalRolePermissionCreatedBy", fields: [createdBy], references: [id])
+    updater    Users?                 @relation("GlobalRolePermissionUpdatedBy", fields: [updatedBy], references: [id])
+
+    @@unique([roleId, permissionId])
+    @@index([roleId])
+    @@index([roleId, permissionId])
 }

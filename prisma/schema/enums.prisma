@@ -8,7 +8,12 @@ enum Status {
 }
 
 enum RoleType {
-  SYSTEM
+  ADMIN
+  GENERAL
+}
+
+enum UserType {
+  ADMIN
   GENERAL
 }
 
@@ -27,10 +32,16 @@ enum PackageStatus {
 }
 
 enum TenantType {
+  ADMIN
   UNIVERSITY
   COLLEGE
   SCHOOL
   OTHER_INSTITUTION
+}
+
+enum GlobalPermissionType {
+  ADMIN
+  GENERAL
 }
 
 enum InstitutionLocation {

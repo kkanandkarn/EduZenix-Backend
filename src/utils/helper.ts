@@ -27,7 +27,7 @@ export const extractErrorDetails = (
     console.log("❌ SERVER ERROR: ", error);
     logger.error({ error });
     return {
-      message: error.message,
+      message: "Something went wrong. Please try again later",
       statusCode: SERVER_ERROR,
       type: "serverError",
     };
@@ -36,14 +36,14 @@ export const extractErrorDetails = (
   if (typeof error === "string") {
     logger.error({ error }, "❌ SERVER ERROR");
     return {
-      message: error,
+      message: "Something went wrong. Please try again later",
       statusCode: SERVER_ERROR,
       type: "serverError",
     };
   }
   logger.error({ error }, "❌ SERVER ERROR");
   return {
-    message: "An unexpected error occurred",
+    message: "Something went wrong. Please try again later",
     statusCode: SERVER_ERROR,
     type: "serverError",
   };

@@ -16,4 +16,10 @@ router.get("/list-global-permissions", (req, res, next) =>
 router.post("/create-tenant", (req, res, next) =>
   dispatcher(req, res, next, adminController.createTenant.bind(adminController)),
 );
+router.post("/save-mail-template", (req, res, next) =>
+  dispatcher(req, res, next, adminController.saveMailTemplate.bind(adminController)),
+);
+router.post("/save-constant", (req, res, next) =>
+  dispatcher(req, res, next, adminController.saveConstant.bind(adminController)),
+);
 export default router;

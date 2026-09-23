@@ -2,6 +2,9 @@ import camelcaseKeys, { type ObjectLike } from "camelcase-keys";
 import { ErrorHandler } from "../helper";
 import logger from "./logger";
 import { SERVER_ERROR } from "./status-codes";
+import { prisma } from "../config";
+import { randomInt } from "node:crypto";
+import { Prisma } from "../generated/prisma/client";
 
 export const camelize = <T = unknown>(obj: unknown): T => {
   const cloned = structuredClone(obj) as ObjectLike | readonly ObjectLike[];
@@ -47,4 +50,14 @@ export const extractErrorDetails = (
     statusCode: SERVER_ERROR,
     type: "serverError",
   };
+};
+
+export const generateOtp = (): string => {
+  const otp = randomInt(0, 10000);
+  return otp.toString().padStart(4, "0");
+};
+
+export const getConstant = async (name: string) => {
+  const data = await prisma.constant.findFirst({ where: { name, status: "ACTIVE" } });
+  return data?.data as Prisma.JsonObject;
 };

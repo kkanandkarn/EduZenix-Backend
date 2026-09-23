@@ -89,6 +89,7 @@ class TenantRepository {
         roleDescription: data.roleDescription || null,
         tenantId,
         roleType: RoleType.ADMIN,
+        requireMfa: data.requireMfa ?? false,
         status: data.status || AuthStatus.ACTIVE,
         createdBy: user.userId || null,
         updatedBy: user.userId || null,

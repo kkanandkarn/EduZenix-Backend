@@ -25,6 +25,7 @@ model Tenants {
     crmSchools           CrmSchool[]
     roles                Roles[]
     users                Users[]
+    tenantMailTemplates  TenantMailTemplates[]
 
     globalTenantPermissions GlobalTenantPermissions[] @relation("GlobalTenantPermissionTenant")
 
@@ -59,6 +60,7 @@ model Roles {
     roleDescription String?    @db.Text
     totalUsers      Int        @default(0)
     roleType        RoleType   @default(GENERAL)
+    requireMfa      Boolean    @default(false)
     tenantId        String     @db.Uuid
     tenant          Tenants    @relation(fields: [tenantId], references: [id])
     status          AuthStatus @default(ACTIVE)
@@ -191,4 +193,18 @@ model GlobalRolePermissions {
     @@unique([roleId, permissionId])
     @@index([roleId])
     @@index([roleId, permissionId])
+}
+
+model Otp {
+    id            String    @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    otpReason     String
+    otp           String
+    otpType       OtpType
+    otpIdentifier String
+    isUsed        Boolean   @default(false)
+    status        Status    @default(ACTIVE)
+    createdAt     DateTime  @default(now())
+    expiredAt     DateTime
+    usedAt        DateTime?
+    otpData       Json?     @db.JsonB
 }

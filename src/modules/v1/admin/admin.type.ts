@@ -1,3 +1,5 @@
+import { Prisma, Status } from "../../../generated/prisma/client";
+
 export interface PermissionBody {
   permissionName: string;
   parent: string;
@@ -11,4 +13,9 @@ export interface AddGlobalPermissionBody {
 export interface UpdateGlobalPermissionBody {
   id: string;
   permission: PermissionBody;
+}
+export interface SaveConstantBody {
+  name: string;
+  data: Prisma.InputJsonObject;
+  status: Status;
 }

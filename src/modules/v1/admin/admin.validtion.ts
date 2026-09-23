@@ -1,7 +1,12 @@
 import Joi from "joi";
 import { ErrorHandler } from "../../../helper";
 import { BAD_REQUEST } from "../../../utils/status-codes";
-import { AddGlobalPermissionBody, UpdateGlobalPermissionBody } from "./admin.type";
+import {
+  AddGlobalPermissionBody,
+  SaveConstantBody,
+  UpdateGlobalPermissionBody,
+} from "./admin.type";
+import { Prisma, Status } from "../../../generated/prisma/client";
 
 const permissionSchema = Joi.object({
   permissionName: Joi.string().trim().required().messages({
@@ -54,6 +59,66 @@ export const UpdateGlobalPermissionSchema = Joi.object({
     "object.base": "Permission must be an object",
   }),
 });
+// Sent as multipart/form-data, so `variables` reaches us as a JSON string.
+const templateVariablesSchema = Joi.any()
+  .custom((value: unknown, helpers) => {
+    let parsed = value;
+
+    if (typeof parsed === "string") {
+      try {
+        parsed = JSON.parse(parsed);
+      } catch {
+        return helpers.error("object.base");
+      }
+    }
+
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      return helpers.error("object.base");
+    }
+
+    return parsed;
+  })
+  .optional()
+  .messages({
+    "object.base": "Template variables must be a valid JSON object",
+  });
+
+export const validateSaveMailTemplateSchema = Joi.object({
+  name: Joi.string().trim().required().messages({
+    "any.required": "Template name is required",
+    "string.empty": "Template name cannot be empty",
+    "string.base": "Template name must be a string",
+  }),
+  subject: Joi.string().trim().required().messages({
+    "any.required": "Template subject is required",
+    "string.empty": "Template subject cannot be empty",
+    "string.base": "Template subject must be a string",
+  }),
+  variables: templateVariablesSchema,
+});
+export const saveConstantSchema = Joi.object({
+  name: Joi.string().required().messages({
+    "any.required": "Constant name is required",
+    "string.empty": "Constant name cannot be empty",
+    "string.base": "Constant name must be a string",
+  }),
+
+  data: Joi.object().min(1).required().messages({
+    "any.required": "Constant data is required",
+    "object.base": "Constant data must be an object",
+    "object.min": "Constant data must contain at least one key",
+  }),
+
+  status: Joi.string()
+    .valid(...Object.values(Status))
+    .required()
+    .messages({
+      "any.required": "Status is required",
+      "any.only": "Invalid status",
+      "string.empty": "Status cannot be empty",
+      "string.base": "Status must be a string",
+    }),
+});
 function assertValid<T>(schema: Joi.ObjectSchema<T>, input: unknown): T {
   if (!input) throw new ErrorHandler(BAD_REQUEST, "Request body is required.");
   const { value, error } = schema.validate(input, {
@@ -70,4 +135,13 @@ export function validateAddGlobalPermission(input: unknown): AddGlobalPermission
 }
 export function validateUpdateGlobalPermission(input: unknown): UpdateGlobalPermissionBody {
   return assertValid(UpdateGlobalPermissionSchema, input);
+}
+// `body` is not part of the payload: it is read from the uploaded HTML file.
+export function validateSaveMailTemplate(
+  input: unknown,
+): Omit<Prisma.MailTemplatesCreateInput, "body"> {
+  return assertValid(validateSaveMailTemplateSchema, input);
+}
+export function validateSaveConstant(input: unknown): SaveConstantBody {
+  return assertValid(saveConstantSchema, input);
 }

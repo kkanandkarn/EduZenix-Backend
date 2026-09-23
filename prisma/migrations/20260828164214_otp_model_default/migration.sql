@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Otp" ALTER COLUMN "status" SET DEFAULT 'ACTIVE';

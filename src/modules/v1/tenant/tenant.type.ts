@@ -12,6 +12,7 @@ export interface RoleBody {
   roleName: string;
   roleDescription?: string;
   status?: AuthStatus;
+  requireMfa?: boolean;
 }
 export interface UserBody {
   firstName: string;

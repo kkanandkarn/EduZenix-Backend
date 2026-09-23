@@ -1,6 +1,11 @@
+import { Prisma } from "../../../generated/prisma/browser";
 import { throwError } from "../../../utils/helper";
 import AdminRepository from "./admin.repository";
-import { AddGlobalPermissionBody, UpdateGlobalPermissionBody } from "./admin.type";
+import {
+  AddGlobalPermissionBody,
+  SaveConstantBody,
+  UpdateGlobalPermissionBody,
+} from "./admin.type";
 
 class AdminService {
   private readonly repository: AdminRepository;
@@ -26,6 +31,24 @@ class AdminService {
   async listGlobalPermissions() {
     try {
       return await this.repository.listGlobalPermissions();
+    } catch (error) {
+      throwError(error);
+    }
+  }
+  async saveMailTemplate(body: Prisma.MailTemplatesCreateInput) {
+    try {
+      await this.repository.saveMailTemplate(body);
+
+      return {
+        message: "Mail template saved successfully",
+      };
+    } catch (error) {
+      throwError(error);
+    }
+  }
+  async saveConstant(body: SaveConstantBody) {
+    try {
+      return await this.repository.saveConstant(body);
     } catch (error) {
       throwError(error);
     }

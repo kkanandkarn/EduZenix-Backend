@@ -105,3 +105,9 @@ enum CrmOtherInstitutionManagement {
   LOCAL_BODY
   UNIVERSITY
 }
+
+enum OtpType {
+  EMAIL
+  WHATS_APP
+  SMS
+}

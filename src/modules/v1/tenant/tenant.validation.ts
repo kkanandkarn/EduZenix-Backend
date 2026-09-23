@@ -51,6 +51,9 @@ const roleSchema = Joi.object({
   roleDescription: Joi.string().trim().optional().messages({
     "string.base": "Invalid role description",
   }),
+  requireMfa: Joi.boolean().optional().messages({
+    "boolean.base": "Invalid MFA requirement",
+  }),
 
   status: Joi.string()
     .valid(...Object.values(AuthStatus))

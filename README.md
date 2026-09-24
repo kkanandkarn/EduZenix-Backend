@@ -86,17 +86,6 @@ cp .env.example .env.development
 
 `src/bin/www.ts` loads `.env.${NODE_ENV}`; the Prisma CLI (via `prisma.config.ts`) loads `.env.<NODE_ENV>.local`, then `.env.<NODE_ENV>`, then `.env` — first file to define a variable wins.
 
-| Variable                   | Required | Purpose                                                           |
-| -------------------------- | -------- | ----------------------------------------------------------------- |
-| `DATABASE_URL`             | yes      | PostgreSQL connection string used by the pg driver adapter        |
-| `PORT`                     | no       | HTTP port (defaults to `5000`)                                    |
-| `ALLOWED_ORIGINS`          | yes      | Comma-separated CORS allowlist; requests with no origin pass      |
-| `FRONTEND_URL`             | no       | Base URL used when building links back to the web app             |
-| `JWT_ACCESS_SECRET`        | yes      | Signs 10-minute access tokens                                     |
-| `JWT_REFRESH_SECRET`       | yes      | Signs 3-day refresh tokens                                        |
-| `CRYPTO_ENCRYPTION_SECRET` | yes      | Key material for the AES-256-GCM helpers in `src/utils/crypto.ts` |
-| `LOG_LEVEL`                | no       | pino level in non-production (defaults to `info`)                 |
-
 ### 3. Install, migrate, generate
 
 ```bash

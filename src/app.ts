@@ -6,7 +6,7 @@ import path from "node:path";
 import { handleError, validateToken } from "./middleware";
 import { ErrorHandler } from "./helper";
 import { corsOptions } from "./config";
-// import { v1 } from "./modules";
+import { v1 } from "./modules";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
@@ -37,7 +37,7 @@ app
 
 app.use(limiter);
 app.use(validateToken);
-// app.use("/v1", v1);
+app.use("/v1", v1);
 app.use((err: ErrorHandler, _req: Request, res: Response, _next: NextFunction) => {
   handleError(err, res);
 });

@@ -1,0 +1,26 @@
+model Constant {
+    id     String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    name   String @unique
+    data   Json   @db.JsonB
+    status Status @default(ACTIVE)
+}
+
+model MailTemplates {
+    id        String @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    name      String @unique
+    subject   String
+    body      String @db.Text
+    variables Json?  @db.JsonB
+    status    Status @default(ACTIVE)
+}
+
+model TenantMailTemplates {
+    id        String  @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    name      String
+    tenantId  String  @db.Uuid
+    tenant    Tenants @relation(fields: [tenantId], references: [id])
+    subject   String
+    body      String  @db.Text
+    variables Json?   @db.JsonB
+    status    Status  @default(ACTIVE)
+}

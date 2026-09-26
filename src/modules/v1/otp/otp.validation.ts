@@ -1,11 +1,11 @@
 import Joi from "joi";
 import { ErrorHandler } from "../../../helper";
 import { BAD_REQUEST } from "../../../utils/status-codes";
-import { SendOtpBody, VerifyOtpBody } from "./otp.type";
+import type { SendOtpBody, VerifyOtpBody } from "./otp.type";
 
 const phoneNumberRegex = /^[1-9]\d{9,14}$/;
 
-const sendOtpSchema = Joi.object({
+const sendOtpSchema = Joi.object<SendOtpBody>({
   otpReason: Joi.string().valid("LOGIN", "UPDATE_PASSWORD").required().messages({
     "any.required": "OTP reason is required",
     "any.only": "OTP reason must be either LOGIN or UPDATE_PASSWORD",
@@ -39,7 +39,7 @@ const sendOtpSchema = Joi.object({
       "string.base": "OTP identifier must be a string",
     }),
 });
-const verifyOtpSchema = Joi.object({
+const verifyOtpSchema = Joi.object<VerifyOtpBody>({
   otpReason: Joi.string().valid("LOGIN", "UPDATE_PASSWORD").required().messages({
     "any.required": "OTP reason is required",
     "any.only": "OTP reason must be either LOGIN or UPDATE_PASSWORD",
@@ -84,14 +84,14 @@ const verifyOtpSchema = Joi.object({
 });
 function assertValid<T>(schema: Joi.ObjectSchema<T>, input: unknown): T {
   if (!input) throw new ErrorHandler(BAD_REQUEST, "Request body is required.");
-  const { value, error } = schema.validate(input, {
+  const result = schema.validate(input, {
     abortEarly: true,
     stripUnknown: true,
   });
-  if (error) {
-    throw new ErrorHandler(BAD_REQUEST, error.message);
+  if (result.error) {
+    throw new ErrorHandler(BAD_REQUEST, result.error.message);
   }
-  return value;
+  return result.value;
 }
 export function validateSendOtp(input: unknown): SendOtpBody {
   return assertValid(sendOtpSchema, input);

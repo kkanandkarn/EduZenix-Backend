@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { ErrorHandler } from "../helper";
-import { FORBIDDEN, OK } from "../utils/status-codes";
+import type { NextFunction, Request, Response } from "express";
+import { OK } from "../utils/status-codes";
 import { SUCCESS } from "../utils/constant";
 import { camelize } from "../utils/helper";
 
@@ -8,59 +7,47 @@ export type ControllerFunc = (
   req: Request,
   res: Response,
   next: NextFunction,
-) => Promise<Record<string, any> | void> | Record<string, any> | void;
+) =>
+  Promise<Record<string, unknown> | unknown[] | void> | Record<string, unknown> | unknown[] | void;
 
-const checkPermission = async (
-  user: any,
-  resource: string | null,
-  perm: string | null,
-): Promise<void> => {
-  if (!resource || !perm) return;
+interface DispatcherRequestBody {
+  fileName?: string;
+  export?: boolean;
+  [key: string]: unknown;
+}
 
-  //   const enforcer = await casbinEnforcer;
-  //   const allowed = await enforcer.enforce(
-  //     user.userId,
-  //     resource,
-  //     perm,
-  //     user.roleKey,
-  //   );
+interface ExportableResponse extends Response {
+  xls: (fileName: string, payload: unknown) => Response;
+}
 
-  //   if (!allowed) {
-  //     throw new ErrorHandler(
-  //       FORBIDDEN,
-  //       "You do not have permission for this Action",
-  //     );
-  //   }
+const sendExport = (req: Request, res: Response, data: Record<string, unknown> | unknown[]) => {
+  const body = req.body as DispatcherRequestBody | undefined;
+  const fileName = body?.fileName || "report.xlsx";
+  const payload = Array.isArray(data)
+    ? data
+    : ((data.data as Record<string, unknown> | undefined) ?? data);
+  return (res as ExportableResponse).xls(fileName, payload);
 };
 
-const sendExport = (req: Request, res: Response, data: Record<string, any>) => {
-  const fileName = req.body?.fileName || "report.xlsx";
-  const payload = data.data ?? data;
-  return (res as any).xls(fileName, payload);
-};
-
-const sendSuccess = (res: Response, data: Record<string, any>) => {
+const sendSuccess = (res: Response, data: Record<string, unknown> | unknown[]) => {
   return res.status(OK).json({ status: SUCCESS, data: camelize(data) });
 };
-
 const dispatcher = async (
   req: Request,
   res: Response,
   next: NextFunction,
   func: ControllerFunc,
-  resource: string | null = null,
-  perm: string | null = null,
+  _resource: string | null = null,
+  _perm: string | null = null,
 ): Promise<Response | void> => {
   try {
-    const { user } = req as Request & { user: any };
-
-    await checkPermission(user, resource, perm);
-
     const data = await func(req, res, next);
 
     if (!data) return;
 
-    if (req?.body?.export) {
+    const body = req.body as DispatcherRequestBody | undefined;
+
+    if (body?.export) {
       return sendExport(req, res, data);
     }
 

@@ -38,7 +38,7 @@ export default defineConfig([
         { checksVoidReturn: { arguments: false, attributes: false } },
       ],
       "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-console": ["warn", { allow: ["warn", "error", "log"] }],
     },
   },
 

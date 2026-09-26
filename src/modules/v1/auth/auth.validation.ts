@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { ErrorHandler } from "../../../helper";
 import { BAD_REQUEST } from "../../../utils/status-codes";
-import { LoginBody } from "./auth.type";
+import type { LoginBody } from "./auth.type";
 export const passwordValidation = (fieldName = "Password") =>
   Joi.string()
     .min(6)
@@ -16,7 +16,7 @@ export const passwordValidation = (fieldName = "Password") =>
       "string.pattern.name": `${fieldName} must contain at least one {#name}.`,
       "any.required": `${fieldName} is required.`,
     });
-const loginSchema = Joi.object({
+const loginSchema = Joi.object<LoginBody>({
   email: Joi.string().email().required().messages({
     "string.base": "Email must be a string.",
     "string.email": "Email must be a valid email address.",
@@ -28,14 +28,14 @@ const loginSchema = Joi.object({
 
 function assertValid<T>(schema: Joi.ObjectSchema<T>, input: unknown): T {
   if (!input) throw new ErrorHandler(BAD_REQUEST, "Request body is required.");
-  const { value, error } = schema.validate(input, {
+  const result = schema.validate(input, {
     abortEarly: true,
     stripUnknown: true,
   });
-  if (error) {
-    throw new ErrorHandler(BAD_REQUEST, error.message);
+  if (result.error) {
+    throw new ErrorHandler(BAD_REQUEST, result.error.message);
   }
-  return value;
+  return result.value;
 }
 export function validateLogin(input: unknown): LoginBody {
   return assertValid(loginSchema, input);

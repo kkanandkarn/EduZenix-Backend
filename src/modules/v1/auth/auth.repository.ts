@@ -6,8 +6,8 @@ class AuthRepository {
   }
   async getUserByEmail(email: string, sensitive: boolean = false) {
     return await this.db.users.findFirst({
-      where: { email, status: "ACTIVE" },
-      include: { role: true },
+      where: { email, status: { not: "DELETED" } },
+      include: { role: true, tenant: true },
       omit: {
         password: !sensitive,
         refreshToken: !sensitive,
@@ -17,7 +17,7 @@ class AuthRepository {
   }
   async getUserById(userId: string, sensitive: boolean = false) {
     return await this.db.users.findFirst({
-      where: { id: userId, status: "ACTIVE" },
+      where: { id: userId, status: { not: "DELETED" } },
       include: { role: true },
       omit: {
         password: !sensitive,

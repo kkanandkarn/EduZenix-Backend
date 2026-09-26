@@ -1,14 +1,14 @@
-const nodemailer = require("nodemailer");
-const { SESv2Client, SendEmailCommand } = require("@aws-sdk/client-sesv2");
-import { SendSesMailBody, SesMailOptions } from "./ses.type";
+import nodemailer from "nodemailer";
+import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
+import type { SendSesMailBody, SesMailOptions } from "./ses.type";
 export const sendMailSES = async (payload: SendSesMailBody) => {
   const { recipient, subject, body, attachments = [], cc = [], bcc = [], senderName } = payload;
 
   const ses = new SESv2Client({
     region: process.env.AWS_REGION || "ap-south-1",
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY,
-      secretAccessKey: process.env.AWS_SECRET_KEY,
+      accessKeyId: process.env.AWS_ACCESS_KEY!,
+      secretAccessKey: process.env.AWS_SECRET_KEY!,
     },
   });
 

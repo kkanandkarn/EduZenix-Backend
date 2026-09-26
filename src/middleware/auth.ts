@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { verifyAccessToken } from "../utils/jwt";
+import type { VerifyTokenResponse } from "../utils/jwt";
 import { ErrorHandler } from "../helper";
 import { NOT_ACCEPTABLE, SERVER_ERROR, UNAUTHORIZED } from "../utils/status-codes";
-import { RequestUser } from "../types/express";
+import type { RequestUser } from "../types/express";
 import { compare } from "../utils/hash";
 
 const getClientIp = (req: Request): string => {
@@ -20,12 +21,13 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
     ip,
     userId: "",
     roleId: "",
+    tenantId: "",
   };
   req.user = user;
-  const token = req.cookies?.access_token;
+  const token = req.cookies?.access_token as string | undefined;
   if (!token || token == "null" || token == null) return next();
 
-  let decoded;
+  let decoded: VerifyTokenResponse;
   try {
     decoded = verifyAccessToken(token);
   } catch (err) {

@@ -1,4 +1,5 @@
-import pino, { Logger } from "pino";
+import type { Logger } from "pino";
+import pino from "pino";
 import { PINO_TO_OTEL_SEVERITY } from "./constant";
 import os from "node:os";
 

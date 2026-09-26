@@ -1,10 +1,11 @@
 import "dotenv/config";
-import express, { Application, NextFunction, Request, Response } from "express";
+import express from "express";
+import type { Application, NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "node:path";
 import { handleError, validateToken } from "./middleware";
-import { ErrorHandler } from "./helper";
+import type { ErrorHandler } from "./helper";
 import { corsOptions } from "./config";
 import { v1 } from "./modules";
 import cookieParser from "cookie-parser";

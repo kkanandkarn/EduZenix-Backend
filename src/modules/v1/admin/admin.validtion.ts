@@ -1,12 +1,12 @@
 import Joi from "joi";
 import { ErrorHandler } from "../../../helper";
 import { BAD_REQUEST } from "../../../utils/status-codes";
-import {
+import type {
   AddGlobalPermissionBody,
   SaveConstantBody,
   UpdateGlobalPermissionBody,
 } from "./admin.type";
-import { Prisma, Status } from "../../../generated/prisma/client";
+import { type Prisma, Status } from "../../../generated/prisma/client";
 
 const permissionSchema = Joi.object({
   permissionName: Joi.string().trim().required().messages({
@@ -38,7 +38,7 @@ const permissionSchema = Joi.object({
   }),
 });
 
-export const AddGlobalPermissionSchema = Joi.object({
+export const AddGlobalPermissionSchema = Joi.object<AddGlobalPermissionBody>({
   permissions: Joi.array().items(permissionSchema).min(1).required().messages({
     "any.required": "Permissions are required",
     "array.base": "Permissions must be an array",
@@ -46,7 +46,7 @@ export const AddGlobalPermissionSchema = Joi.object({
   }),
 });
 
-export const UpdateGlobalPermissionSchema = Joi.object({
+export const UpdateGlobalPermissionSchema = Joi.object<UpdateGlobalPermissionBody>({
   id: Joi.string().guid({ version: "uuidv7" }).required().messages({
     "any.required": "Permission ID is required",
     "string.empty": "Permission ID cannot be empty",
@@ -83,7 +83,9 @@ const templateVariablesSchema = Joi.any()
     "object.base": "Template variables must be a valid JSON object",
   });
 
-export const validateSaveMailTemplateSchema = Joi.object({
+export const validateSaveMailTemplateSchema = Joi.object<
+  Omit<Prisma.MailTemplatesCreateInput, "body">
+>({
   name: Joi.string().trim().required().messages({
     "any.required": "Template name is required",
     "string.empty": "Template name cannot be empty",
@@ -96,7 +98,7 @@ export const validateSaveMailTemplateSchema = Joi.object({
   }),
   variables: templateVariablesSchema,
 });
-export const saveConstantSchema = Joi.object({
+export const saveConstantSchema = Joi.object<SaveConstantBody>({
   name: Joi.string().required().messages({
     "any.required": "Constant name is required",
     "string.empty": "Constant name cannot be empty",
@@ -121,14 +123,14 @@ export const saveConstantSchema = Joi.object({
 });
 function assertValid<T>(schema: Joi.ObjectSchema<T>, input: unknown): T {
   if (!input) throw new ErrorHandler(BAD_REQUEST, "Request body is required.");
-  const { value, error } = schema.validate(input, {
+  const result = schema.validate(input, {
     abortEarly: true,
     stripUnknown: true,
   });
-  if (error) {
-    throw new ErrorHandler(BAD_REQUEST, error.message);
+  if (result.error) {
+    throw new ErrorHandler(BAD_REQUEST, result.error.message);
   }
-  return value;
+  return result.value;
 }
 export function validateAddGlobalPermission(input: unknown): AddGlobalPermissionBody {
   return assertValid(AddGlobalPermissionSchema, input);

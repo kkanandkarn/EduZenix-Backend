@@ -1,10 +1,11 @@
 import { ErrorHandler } from "../../../helper";
+import type { RequestUser } from "../../../types/express";
 import { generateOtp, getConstant, throwError } from "../../../utils/helper";
 import { NOT_FOUND } from "../../../utils/status-codes";
 import { AuthRepository } from "../auth";
 import { MailService } from "../mail";
 import OtpRepository from "./otp.repository";
-import { SendOtpBody } from "./otp.type";
+import type { SendOtpBody } from "./otp.type";
 
 class OtpHelper {
   private readonly authRepository: AuthRepository;
@@ -29,6 +30,26 @@ class OtpHelper {
         };
         await this.mailService.sendOtp(otpIdentifier, data);
       }
+    } catch (error) {
+      throwError(error);
+    }
+  }
+  async sendPasswordOtp(user: RequestUser) {
+    try {
+      const userData = await this.authRepository.getUserById(user.userId);
+      if (!userData) throw new ErrorHandler(NOT_FOUND, "You are not allowed to update password");
+      const body: SendOtpBody = {
+        otpIdentifier: userData.email,
+        otpReason: "UPDATE_PASSWORD",
+        otpType: "EMAIL",
+      };
+      const otp = await this.generateOtpAndSave(body);
+      const data = {
+        userName: `${userData.firstName} ${userData.lastName}`,
+        otpReason: "update password",
+        otp,
+      };
+      await this.mailService.sendOtp(userData.email, data);
     } catch (error) {
       throwError(error);
     }

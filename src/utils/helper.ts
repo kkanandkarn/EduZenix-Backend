@@ -4,7 +4,7 @@ import logger from "./logger";
 import { SERVER_ERROR } from "./status-codes";
 import { prisma } from "../config";
 import { randomInt } from "node:crypto";
-import { Prisma } from "../generated/prisma/client";
+import type { Prisma } from "../generated/prisma/client";
 
 export const camelize = <T = unknown>(obj: unknown): T => {
   const cloned = structuredClone(obj) as ObjectLike | readonly ObjectLike[];

@@ -1,6 +1,6 @@
 model CrmUniversity {
     id                  String               @id @default(dbgenerated("uuidv7()")) @db.Uuid
-    aisheCode           String?
+    aisheCode           String               @unique
     name                String
     state               String
     district            String
@@ -25,7 +25,7 @@ model CrmUniversity {
 
 model CrmCollege {
     id                  String                    @id @default(dbgenerated("uuidv7()")) @db.Uuid
-    aisheCode           String?
+    aisheCode           String                    @unique
     name                String
     state               String
     district            String
@@ -54,7 +54,7 @@ model CrmCollege {
 
 model CrmOtherInstitution {
     id                  String                             @id @default(dbgenerated("uuidv7()")) @db.Uuid
-    aisheCode           String?
+    aisheCode           String                             @unique
     name                String
     state               String
     district            String

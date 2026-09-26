@@ -1,5 +1,6 @@
-import { Request } from "express";
-import formidable, { Fields, Files, File } from "formidable";
+import type { Request } from "express";
+import type { Fields, Files, File } from "formidable";
+import formidable from "formidable";
 import fs from "node:fs/promises";
 import sharp from "sharp";
 import { ErrorHandler } from "../helper";

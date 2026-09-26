@@ -1,7 +1,7 @@
-import { Response } from "express";
+import type { Response } from "express";
 import { BAD_REQUEST } from "../utils/status-codes";
 import { FAILURE } from "../utils/constant";
-import { ErrorHandler } from "../helper";
+import type { ErrorHandler } from "../helper";
 
 const handleError = (err: ErrorHandler, res: Response): void => {
   const { statusCode = BAD_REQUEST, message, type } = err;

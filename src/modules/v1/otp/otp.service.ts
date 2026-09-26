@@ -5,7 +5,7 @@ import { BAD_REQUEST, NOT_ACCEPTABLE, NOT_FOUND } from "../../../utils/status-co
 import { AuthRepository } from "../auth";
 import OtpHelper from "./otp.helper";
 import OtpRepository from "./otp.repository";
-import { SendOtpBody, VerifyOtpBody } from "./otp.type";
+import type { SendOtpBody, VerifyOtpBody } from "./otp.type";
 
 class OtpService {
   private readonly helper: OtpHelper;

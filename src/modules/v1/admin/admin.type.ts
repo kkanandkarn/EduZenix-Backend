@@ -1,4 +1,4 @@
-import { Prisma, Status } from "../../../generated/prisma/client";
+import type { Prisma, Status } from "../../../generated/prisma/client";
 
 export interface PermissionBody {
   permissionName: string;

@@ -1,4 +1,4 @@
-import { AuthStatus, TenantType } from "../../../generated/prisma/enums";
+import type { AuthStatus, TenantType } from "../../../generated/prisma/enums";
 
 export interface TenantBody {
   tenantName: string;

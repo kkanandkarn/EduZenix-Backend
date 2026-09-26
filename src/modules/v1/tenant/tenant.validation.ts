@@ -2,7 +2,7 @@ import Joi from "joi";
 import { AuthStatus, TenantType } from "../../../generated/prisma/enums";
 import { ErrorHandler } from "../../../helper";
 import { BAD_REQUEST } from "../../../utils/status-codes";
-import { CreateTenantBody } from "./tenant.type";
+import type { CreateTenantBody } from "./tenant.type";
 
 const tenantSchema = Joi.object({
   tenantName: Joi.string().trim().required().messages({
@@ -97,7 +97,7 @@ const userSchema = Joi.object({
     }),
 });
 
-export const CreateTenantSchema = Joi.object({
+export const CreateTenantSchema = Joi.object<CreateTenantBody>({
   tenant: tenantSchema.required().messages({
     "any.required": "Tenant is required",
     "object.base": "Invalid tenant",
@@ -127,14 +127,14 @@ export const CreateTenantSchema = Joi.object({
 });
 function assertValid<T>(schema: Joi.ObjectSchema<T>, input: unknown): T {
   if (!input) throw new ErrorHandler(BAD_REQUEST, "Request body is required.");
-  const { value, error } = schema.validate(input, {
+  const result = schema.validate(input, {
     abortEarly: true,
     stripUnknown: true,
   });
-  if (error) {
-    throw new ErrorHandler(BAD_REQUEST, error.message);
+  if (result.error) {
+    throw new ErrorHandler(BAD_REQUEST, result.error.message);
   }
-  return value;
+  return result.value;
 }
 export function validateCreateTenant(input: unknown): CreateTenantBody {
   return assertValid(CreateTenantSchema, input);

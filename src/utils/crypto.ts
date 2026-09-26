@@ -9,7 +9,7 @@ function getKey(): Buffer {
   return crypto.createHash("sha256").update(String(process.env.CRYPTO_ENCRYPTION_SECRET)).digest();
 }
 
-export async function encryptData(data: unknown): Promise<string> {
+export function encryptData(data: unknown): string {
   try {
     const iv = crypto.randomBytes(IV_LENGTH);
     const cipher = crypto.createCipheriv(ALGORITHM, getKey(), iv);
@@ -25,7 +25,7 @@ export async function encryptData(data: unknown): Promise<string> {
   }
 }
 
-export async function decryptData<T = unknown>(encryptedData: string): Promise<T> {
+export function decryptData<T = unknown>(encryptedData: string): T {
   try {
     const [ivHex, authTagHex, ciphertext] = encryptedData.split(":");
     const iv = Buffer.from(ivHex, "hex");

@@ -1,7 +1,8 @@
 import { prisma } from "../../../config";
-import { AuthStatus, Prisma, RoleType, UserType } from "../../../generated/prisma/client";
-import { RequestUser } from "../../../types/express";
-import { RoleBody, TenantBody, UserBody } from "./tenant.type";
+import type { Prisma} from "../../../generated/prisma/client";
+import { AuthStatus, RoleType, UserType } from "../../../generated/prisma/client";
+import type { RequestUser } from "../../../types/express";
+import type { RoleBody, TenantBody, UserBody } from "./tenant.type";
 class TenantRepository {
   private readonly db: Prisma.TransactionClient | typeof prisma;
 

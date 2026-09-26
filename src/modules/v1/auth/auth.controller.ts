@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import AuthService from "./auth.service";
 import { validateLogin } from "./auth.validation";
 

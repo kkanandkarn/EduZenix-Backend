@@ -1,6 +1,6 @@
 import { prisma } from "../../../config";
-import { Prisma } from "../../../generated/prisma/client";
-import { SaveConstantBody } from "./admin.type";
+import type { Prisma } from "../../../generated/prisma/client";
+import type { SaveConstantBody } from "./admin.type";
 class AdminRepository {
   private readonly db: typeof prisma;
   constructor() {

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import OtpService from "./otp.service";
 import { validateSendOtp, validateVerifyOtp } from "./otp.validation";
 

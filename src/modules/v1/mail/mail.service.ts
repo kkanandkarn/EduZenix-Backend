@@ -26,7 +26,11 @@ class MailService {
       }
 
       try {
-        // await sendMailSES({ recipient: email, body: content, subject: subject });
+        if (process.env.NODE_ENV === "development") {
+          console.log("SKIP MAIL SENT FOR DEVELOPMENT ENVIRONMENT");
+          return;
+        }
+        await sendMailSES({ recipient: email, body: content, subject: subject });
         console.log(`Email sent to ${email} regarding Login`);
       } catch (emailError) {
         console.error("Email sending error:", emailError);

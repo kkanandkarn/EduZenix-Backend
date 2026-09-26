@@ -1,4 +1,5 @@
-import { AuthStatus, OtpType, UserType } from "../../../generated/prisma/enums";
+import type { Prisma } from "../../../generated/prisma/client";
+import type { AuthStatus, OtpType, UserType } from "../../../generated/prisma/enums";
 
 export type OtpReason = "LOGIN" | "UPDATE_PASSWORD";
 export interface SendOtpBody {
@@ -38,5 +39,5 @@ export interface SaveOtpBody {
   otp: string;
   otpType: OtpType;
   otpIdentifier: string;
-  otpData?: Record<string, any>;
+  otpData?: Prisma.InputJsonObject;
 }

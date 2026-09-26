@@ -1,10 +1,10 @@
-import { Prisma } from "../../../generated/prisma/client";
+import type { Prisma } from "../../../generated/prisma/client";
 import { ErrorHandler } from "../../../helper";
-import { RequestUser } from "../../../types/express";
+import type { RequestUser } from "../../../types/express";
 import { throwError } from "../../../utils/helper";
 import { CONFLICT } from "../../../utils/status-codes";
 import TenantRepository from "./tenant.repository";
-import { CreateTenantBody } from "./tenant.type";
+import type { CreateTenantBody } from "./tenant.type";
 
 class TenantService {
   async createTenant(body: CreateTenantBody, reqUser: RequestUser, db: Prisma.TransactionClient) {

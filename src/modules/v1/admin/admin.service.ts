@@ -1,7 +1,7 @@
-import { Prisma } from "../../../generated/prisma/browser";
+import type { Prisma } from "../../../generated/prisma/browser";
 import { throwError } from "../../../utils/helper";
 import AdminRepository from "./admin.repository";
-import {
+import type {
   AddGlobalPermissionBody,
   SaveConstantBody,
   UpdateGlobalPermissionBody,

@@ -4,7 +4,7 @@ import { throwError } from "../../../utils/helper";
 import { signAccessToken, signRefreshToken } from "../../../utils/jwt";
 import { NOT_ACCEPTABLE, NOT_FOUND, UNAUTHORIZED } from "../../../utils/status-codes";
 import AuthRepository from "./auth.repository";
-import { LoginBody } from "./auth.type";
+import type { LoginBody } from "./auth.type";
 
 class AuthService {
   private readonly repository: AuthRepository;

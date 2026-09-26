@@ -1,5 +1,5 @@
 import TenantService from "./tenant.service";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { validateCreateTenant } from "./tenant.validation";
 import { prisma } from "../../../config";
 

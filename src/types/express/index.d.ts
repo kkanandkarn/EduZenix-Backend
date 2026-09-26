@@ -12,4 +12,5 @@ export interface RequestUser {
   isAuth: boolean;
   userId: string;
   roleId: string;
+  tenantId: string;
 }

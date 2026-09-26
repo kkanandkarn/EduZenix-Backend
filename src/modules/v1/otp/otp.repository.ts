@@ -1,6 +1,6 @@
 import { prisma } from "../../../config";
-import { OtpType } from "../../../generated/prisma/enums";
-import { OtpReason, SaveOtpBody } from "./otp.type";
+import type { OtpType } from "../../../generated/prisma/enums";
+import type { OtpReason, SaveOtpBody } from "./otp.type";
 
 class OtpRepository {
   private readonly db: typeof prisma;

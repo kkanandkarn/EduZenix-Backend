@@ -34,29 +34,25 @@ class OtpHelper {
       throwError(error);
     }
   }
-  async sendPasswordOtp(user: RequestUser) {
+  async sendPasswordUpdateOtp(body: SendOtpBody) {
     try {
-      const userData = await this.authRepository.getUserById(user.userId);
-      if (!userData) throw new ErrorHandler(NOT_FOUND, "You are not allowed to update password");
-      const body: SendOtpBody = {
-        otpIdentifier: userData.email,
-        otpReason: "UPDATE_PASSWORD",
-        otpType: "EMAIL",
-      };
+      const { otpIdentifier } = body;
+      const user = await this.authRepository.getUserByEmail(otpIdentifier);
+      if (!user) throw new ErrorHandler(NOT_FOUND, "User with this email does not exists");
       const otp = await this.generateOtpAndSave(body);
       const data = {
-        userName: `${userData.firstName} ${userData.lastName}`,
-        otpReason: "update password",
+        userName: `${user.firstName} ${user.lastName}`,
+        otpReason: "login",
         otp,
       };
-      await this.mailService.sendOtp(userData.email, data);
+      await this.mailService.sendOtp(user.email, data);
     } catch (error) {
       throwError(error);
     }
   }
   async generateOtpAndSave(body: SendOtpBody) {
     try {
-      const { otpIdentifier, otpReason, otpType } = body;
+      const { otpIdentifier, otpReason, otpType, otpData } = body;
       let otp = generateOtp();
 
       if (otpType === "EMAIL") {
@@ -70,6 +66,7 @@ class OtpHelper {
         otpIdentifier,
         otpReason,
         otpType,
+        otpData,
       });
       return otp;
     } catch (error) {

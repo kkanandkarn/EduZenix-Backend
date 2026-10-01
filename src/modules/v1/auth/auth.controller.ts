@@ -35,5 +35,12 @@ class AuthController {
       next(error);
     }
   }
+  async profileDetails(req: Request, res: Response, next: NextFunction) {
+    try {
+      return await this.service.profileDetails(req.user);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default AuthController;

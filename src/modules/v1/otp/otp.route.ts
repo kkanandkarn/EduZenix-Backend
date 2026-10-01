@@ -10,5 +10,8 @@ router.post("/send-otp", (req, res, next) =>
 router.post("/verify-otp", (req, res, next) =>
   dispatcher(req, res, next, otpController.verifyOtp.bind(otpController)),
 );
+router.post("/send-update-password-otp", (req, res, next) =>
+  dispatcher(req, res, next, otpController.sendUpdatePasswordOtp.bind(otpController)),
+);
 
 export default router;

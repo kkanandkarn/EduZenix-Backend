@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { ErrorHandler } from "../../../helper";
 import { BAD_REQUEST } from "../../../utils/status-codes";
-import type { SendOtpBody, VerifyOtpBody } from "./otp.type";
+import type { SendOtpBody, SendUpdatePasswordOtp, VerifyOtpBody } from "./otp.type";
 
 const phoneNumberRegex = /^[1-9]\d{9,14}$/;
 
@@ -82,6 +82,20 @@ const verifyOtpSchema = Joi.object<VerifyOtpBody>({
       "string.pattern.base": "OTP must be exactly 4 digits",
     }),
 });
+const sendUpdatePasswordOtpSchema = Joi.object<SendUpdatePasswordOtp>({
+  password: Joi.string()
+    .min(8)
+    .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$"))
+    .required()
+    .messages({
+      "any.required": "Password is required",
+      "string.empty": "Password cannot be empty",
+      "string.base": "Password must be a string",
+      "string.min": "Password must be at least 8 characters long",
+      "string.pattern.base":
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+    }),
+});
 function assertValid<T>(schema: Joi.ObjectSchema<T>, input: unknown): T {
   if (!input) throw new ErrorHandler(BAD_REQUEST, "Request body is required.");
   const result = schema.validate(input, {
@@ -95,6 +109,9 @@ function assertValid<T>(schema: Joi.ObjectSchema<T>, input: unknown): T {
 }
 export function validateSendOtp(input: unknown): SendOtpBody {
   return assertValid(sendOtpSchema, input);
+}
+export function validateSendUpdaePasswordOtp(input: unknown): SendUpdatePasswordOtp {
+  return assertValid(sendUpdatePasswordOtpSchema, input);
 }
 export function validateVerifyOtp(input: unknown): VerifyOtpBody {
   return assertValid(verifyOtpSchema, input);

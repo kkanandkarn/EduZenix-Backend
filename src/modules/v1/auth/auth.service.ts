@@ -1,4 +1,5 @@
 import { ErrorHandler } from "../../../helper";
+import { RequestUser } from "../../../types/express";
 import { compare } from "../../../utils/hash";
 import { throwError } from "../../../utils/helper";
 import { signAccessToken, signRefreshToken } from "../../../utils/jwt";
@@ -30,6 +31,7 @@ class AuthService {
         throw new ErrorHandler(UNAUTHORIZED, "Invalid Password");
       }
       const userDetails = await this.repository.getUserById(user.id);
+      const permissions = await this.repository.getRolePermissions(user.roleId);
       const payload = {
         userId: user.id,
         roleId: user.roleId,
@@ -38,9 +40,20 @@ class AuthService {
       const accessToken = signAccessToken(payload);
       const refreshToken = signRefreshToken(payload);
       return {
-        userDetails,
+        userDetails: { ...userDetails, permissions },
         accessToken,
         refreshToken,
+      };
+    } catch (error) {
+      throwError(error);
+    }
+  }
+  async profileDetails(user: RequestUser) {
+    try {
+      const userDetails = await this.repository.getUserById(user.userId);
+      const permissions = await this.repository.getRolePermissions(user.roleId);
+      return {
+        userDetails: { ...userDetails, permissions },
       };
     } catch (error) {
       throwError(error);

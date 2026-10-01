@@ -13,10 +13,10 @@ class OtpRepository {
     });
   }
   async saveOtp(body: SaveOtpBody) {
-    const { otpIdentifier, otpReason, otpType, otp } = body;
+    const { otpIdentifier, otpReason, otpType, otp, otpData } = body;
     const expiredAt = new Date(Date.now() + 10 * 60 * 1000);
-    const otpData = await this.getOtpData(otpIdentifier, otpReason, otpType);
-    if (otpData) {
+    const existingOtpData = await this.getOtpData(otpIdentifier, otpReason, otpType);
+    if (existingOtpData) {
       return await this.db.otp.updateMany({
         where: {
           otpIdentifier,
@@ -25,6 +25,7 @@ class OtpRepository {
         },
         data: {
           otp,
+          otpData,
           isUsed: false,
           createdAt: new Date(),
           expiredAt,
@@ -49,6 +50,9 @@ class OtpRepository {
         usedAt: new Date(),
       },
     });
+  }
+  async updatePasswordByEmail(email: string, password: string) {
+    return await this.db.users.updateMany({ where: { email }, data: { password } });
   }
 }
 export default OtpRepository;

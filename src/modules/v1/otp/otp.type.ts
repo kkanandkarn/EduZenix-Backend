@@ -6,6 +6,7 @@ export interface SendOtpBody {
   otpReason: OtpReason;
   otpType: OtpType;
   otpIdentifier: string;
+  otpData?: Record<string, string>;
 }
 export interface VerifyOtpBody {
   otpReason: OtpReason;
@@ -29,7 +30,14 @@ export type UserDetails = {
   lastLoginAt: Date | null;
   createdAt: Date;
   updatedAt: Date | null;
+  permissions?: RolePermissions;
 };
+export interface RolePermissions {
+  roleId: string;
+  permissionId: string;
+  permissionName: string;
+  parent: string;
+}
 export interface OtpLoginBody {
   email?: string;
   phone?: string;
@@ -40,4 +48,13 @@ export interface SaveOtpBody {
   otpType: OtpType;
   otpIdentifier: string;
   otpData?: Prisma.InputJsonObject;
+}
+export interface SendUpdatePasswordOtp {
+  password: string;
+}
+export interface VerifyOtpResponse {
+  message: string;
+  accessToken?: string;
+  refreshToken?: string;
+  userDetails?: UserDetails;
 }

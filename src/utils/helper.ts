@@ -61,3 +61,10 @@ export const getConstant = async (name: string) => {
   const data = await prisma.constant.findFirst({ where: { name, status: "ACTIVE" } });
   return data?.data as Prisma.JsonObject;
 };
+export const userMfaDetails = async (userId: string) => {
+  const userDetails = await prisma.users.findUnique({
+    where: { id: userId },
+    select: { mfaCompleted: true, requireMfa: true },
+  });
+  return userDetails;
+};

@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import OtpService from "./otp.service";
-import { validateSendOtp, validateVerifyOtp } from "./otp.validation";
+import { validateSendOtp, validateSendUpdaePasswordOtp, validateVerifyOtp } from "./otp.validation";
+import { VerifyOtpResponse } from "./otp.type";
 
 class OtpController {
   private readonly service: OtpService;
@@ -10,7 +11,15 @@ class OtpController {
   async sendotp(req: Request, res: Response, next: NextFunction) {
     try {
       const body = validateSendOtp(req.body);
-      return await this.service.sendotp(body);
+      return await this.service.sendotp(body, req.user);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async sendUpdatePasswordOtp(req: Request, res: Response, next: NextFunction) {
+    try {
+      const body = validateSendUpdaePasswordOtp(req.body);
+      return await this.service.sendUpdatePasswordOtp(body, req.user);
     } catch (error) {
       next(error);
     }
@@ -18,7 +27,7 @@ class OtpController {
   async verifyOtp(req: Request, res: Response, next: NextFunction) {
     try {
       const body = validateVerifyOtp(req.body);
-      const data = await this.service.verifyOtp(body);
+      const data = (await this.service.verifyOtp(body)) as VerifyOtpResponse;
       if (data?.accessToken && data?.refreshToken) {
         const isSecure = process.env.NODE_ENV === "production";
 

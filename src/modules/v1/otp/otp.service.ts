@@ -1,7 +1,7 @@
-import { Otp } from "../../../generated/prisma/client";
+import type { Otp } from "../../../generated/prisma/client";
 import { OtpType } from "../../../generated/prisma/enums";
 import { ErrorHandler } from "../../../helper";
-import { RequestUser } from "../../../types/express";
+import type { RequestUser } from "../../../types/express";
 import { hashPassword } from "../../../utils/hash";
 import { throwError } from "../../../utils/helper";
 import { signAccessToken, signRefreshToken } from "../../../utils/jwt";
@@ -9,12 +9,7 @@ import { BAD_REQUEST, NOT_ACCEPTABLE, NOT_FOUND } from "../../../utils/status-co
 import { AuthRepository } from "../auth";
 import OtpHelper from "./otp.helper";
 import OtpRepository from "./otp.repository";
-import type {
-  SendOtpBody,
-  SendUpdatePasswordOtp,
-  VerifyOtpBody,
-  VerifyOtpResponse,
-} from "./otp.type";
+import type { SendOtpBody, SendUpdatePasswordOtp, VerifyOtpBody } from "./otp.type";
 
 class OtpService {
   private readonly helper: OtpHelper;
@@ -25,7 +20,7 @@ class OtpService {
     this.repository = new OtpRepository();
     this.authRepository = new AuthRepository();
   }
-  async sendotp(body: SendOtpBody, user: RequestUser) {
+  async sendotp(body: SendOtpBody) {
     try {
       const { otpReason } = body;
       switch (otpReason) {
@@ -59,7 +54,7 @@ class OtpService {
           password: hashedPassword,
         },
       };
-      await this.sendotp(payload, user);
+      await this.sendotp(payload);
       return {
         message: "Otp sent successfully",
       };

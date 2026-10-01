@@ -10,11 +10,13 @@ import { admin } from "./admin";
 import { tenant } from "./tenant";
 import { auth } from "./auth";
 import { otp } from "./otp";
+import { mfa } from "./mfa";
 
 app.use("/admin", adminValidator, admin);
 app.use("/tenant", authValidator, tenant);
 app.use("/auth", auth);
 app.use("/otp", otp);
+app.use("/mfa", authValidator, mfa);
 
 app.use((req, res) => {
   res.status(NOT_FOUND).json({

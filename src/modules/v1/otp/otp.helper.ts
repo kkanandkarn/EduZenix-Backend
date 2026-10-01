@@ -1,5 +1,4 @@
 import { ErrorHandler } from "../../../helper";
-import type { RequestUser } from "../../../types/express";
 import { generateOtp, getConstant, throwError } from "../../../utils/helper";
 import { NOT_FOUND } from "../../../utils/status-codes";
 import { AuthRepository } from "../auth";

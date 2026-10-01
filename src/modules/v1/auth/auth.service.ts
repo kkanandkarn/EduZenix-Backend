@@ -1,5 +1,5 @@
 import { ErrorHandler } from "../../../helper";
-import { RequestUser } from "../../../types/express";
+import type { RequestUser } from "../../../types/express";
 import { compare } from "../../../utils/hash";
 import { throwError } from "../../../utils/helper";
 import { signAccessToken, signRefreshToken } from "../../../utils/jwt";

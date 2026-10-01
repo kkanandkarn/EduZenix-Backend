@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import OtpService from "./otp.service";
 import { validateSendOtp, validateSendUpdaePasswordOtp, validateVerifyOtp } from "./otp.validation";
-import { VerifyOtpResponse } from "./otp.type";
+import type { VerifyOtpResponse } from "./otp.type";
 
 class OtpController {
   private readonly service: OtpService;
@@ -11,7 +11,7 @@ class OtpController {
   async sendotp(req: Request, res: Response, next: NextFunction) {
     try {
       const body = validateSendOtp(req.body);
-      return await this.service.sendotp(body, req.user);
+      return await this.service.sendotp(body);
     } catch (error) {
       next(error);
     }

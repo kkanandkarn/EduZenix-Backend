@@ -81,6 +81,7 @@ model Roles {
 
 model Users {
     id           String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
+    picture      String?
     firstName    String
     lastName     String
     email        String

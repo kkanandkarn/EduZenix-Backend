@@ -10,5 +10,17 @@ router.post("/login", (req, res, next) =>
 router.get("/profile-details", authValidator, (req, res, next) =>
   dispatcher(req, res, next, authController.profileDetails.bind(authController)),
 );
+router.post("/logout", authValidator, (req, res, next) =>
+  dispatcher(req, res, next, authController.logout.bind(authController)),
+);
+router.post("/refresh", (req, res, next) =>
+  dispatcher(req, res, next, authController.refresh.bind(authController)),
+);
+router.post("/google/login", (req, res, next) =>
+  dispatcher(req, res, next, authController.googleLogin.bind(authController)),
+);
+router.get("/google/callback", (req, res, next) =>
+  dispatcher(req, res, next, authController.googleLoginCallback.bind(authController)),
+);
 
 export default router;

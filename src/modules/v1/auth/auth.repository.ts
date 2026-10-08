@@ -42,5 +42,17 @@ class AuthRepository {
       parent: permission.permission.parent,
     }));
   }
+  async removeRefereshToken(userId: string) {
+    return await this.db.users.update({
+      where: { id: userId },
+      data: { refreshToken: null },
+    });
+  }
+  async addRefereshToken(userId: string, refreshToken: string) {
+    return await this.db.users.update({
+      where: { id: userId },
+      data: { refreshToken },
+    });
+  }
 }
 export default AuthRepository;

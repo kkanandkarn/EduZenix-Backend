@@ -16,8 +16,11 @@ model CrmUniversity {
     assignedTo          String?              @db.Uuid
     assignedUser        Users?               @relation("CrmUniversityAssignedTo", fields: [assignedTo], references: [id])
     isOnboarded         Boolean              @default(false)
-    status              CrmStatus
+    status              CrmStatus            @default(PENDING)
     remarks             String?
+    createdBy           String?              @db.Uuid
+    creator             Users?               @relation("CrmUniversityCreatedBy", fields: [createdBy], references: [id])
+    createdAt           DateTime             @default(now())
     updatedBy           String?              @db.Uuid
     updator             Users?               @relation("CrmUniversityUpdatedBy", fields: [updatedBy], references: [id])
     updatedAt           DateTime?
@@ -45,8 +48,11 @@ model CrmCollege {
     assignedTo          String?                   @db.Uuid
     assignedUser        Users?                    @relation("CrmCollegeAssignedTo", fields: [assignedTo], references: [id])
     isOnboarded         Boolean                   @default(false)
-    status              CrmStatus
+    status              CrmStatus                 @default(PENDING)
     remarks             String?
+    createdBy           String?                   @db.Uuid
+    creator             Users?                    @relation("CrmCollegeCreatedBy", fields: [createdBy], references: [id])
+    createdAt           DateTime                  @default(now())
     updatedBy           String?                   @db.Uuid
     updator             Users?                    @relation("CrmCollegeUpdatedBy", fields: [updatedBy], references: [id])
     updatedAt           DateTime?
@@ -72,8 +78,11 @@ model CrmOtherInstitution {
     assignedTo          String?                            @db.Uuid
     assignedUser        Users?                             @relation("CrmOtherInstitutionAssignedTo", fields: [assignedTo], references: [id])
     isOnboarded         Boolean                            @default(false)
-    status              CrmStatus
+    status              CrmStatus                          @default(PENDING)
     remarks             String?
+    createdBy           String?                            @db.Uuid
+    creator             Users?                             @relation("CrmOtherInstitutionCreatedBy", fields: [createdBy], references: [id])
+    createdAt           DateTime                           @default(now())
     updatedBy           String?                            @db.Uuid
     updator             Users?                             @relation("CrmOtherInstitutionUpdatedBy", fields: [updatedBy], references: [id])
     updatedAt           DateTime?
@@ -99,7 +108,7 @@ model CrmSchool {
     assignedTo   String?              @db.Uuid
     assignedUser Users?               @relation("CrmSchoolAssignedTo", fields: [assignedTo], references: [id])
     isOnboarded  Boolean              @default(false)
-    status       CrmStatus
+    status       CrmStatus            @default(PENDING)
     remarks      String?
     createdBy    String?              @db.Uuid
     creator      Users?               @relation("CrmSchoolCreatedBy", fields: [createdBy], references: [id])

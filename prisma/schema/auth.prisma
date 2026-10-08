@@ -126,9 +126,12 @@ model Users {
     assingedCrmOtherInstitutions CrmOtherInstitution[] @relation("CrmOtherInstitutionAssignedTo")
     updatedCrmOtherInstitutions  CrmOtherInstitution[] @relation("CrmOtherInstitutionUpdatedBy")
 
-    assignedCrmSchools CrmSchool[] @relation("CrmSchoolAssignedTo")
-    createdCrmSchools  CrmSchool[] @relation("CrmSchoolCreatedBy")
-    updatedCrmSchools  CrmSchool[] @relation("CrmSchoolUpdatedBy")
+    assignedCrmSchools   CrmSchool[]           @relation("CrmSchoolAssignedTo")
+    createdCrmSchools    CrmSchool[]           @relation("CrmSchoolCreatedBy")
+    updatedCrmSchools    CrmSchool[]           @relation("CrmSchoolUpdatedBy")
+    crmUniversities      CrmUniversity[]       @relation("CrmUniversityCreatedBy")
+    crmColleges          CrmCollege[]          @relation("CrmCollegeCreatedBy")
+    crmOtherInstitutions CrmOtherInstitution[] @relation("CrmOtherInstitutionCreatedBy")
 
     @@unique([email, tenantId, status])
     @@index([email])

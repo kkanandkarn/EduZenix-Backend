@@ -31,7 +31,7 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
   try {
     decoded = verifyAccessToken(token);
   } catch (err) {
-    return next(err);
+    return next();
   }
 
   if (!decoded) return next();

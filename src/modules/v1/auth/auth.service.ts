@@ -11,7 +11,12 @@ import {
 } from "../../../utils/jwt";
 import { NOT_ACCEPTABLE, NOT_FOUND, UNAUTHORIZED } from "../../../utils/status-codes";
 import AuthRepository from "./auth.repository";
-import type { GoogleLogincallbackQuery, GoogleTokenResponse, LoginBody } from "./auth.type";
+import type {
+  GoogleLogincallbackQuery,
+  GoogleTokenResponse,
+  GoogleUserInfo,
+  LoginBody,
+} from "./auth.type";
 
 class AuthService {
   private readonly repository: AuthRepository;
@@ -160,18 +165,38 @@ class AuthService {
         method: tokenMethod,
         data: tokenBody,
       });
-      const accessToken = tokenResponse?.access_token;
+      const googleAccessToken = tokenResponse?.access_token;
       const infoUrl = "https://www.googleapis.com/oauth2/v3/userinfo";
       const infoMethod = "GET";
       const infoHeaders = {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${googleAccessToken}`,
       };
-      const userInfo = await externalApiCall(infoUrl, {
+      const userInfo = await externalApiCall<GoogleUserInfo>(infoUrl, {
         method: infoMethod,
         headers: infoHeaders,
       });
       console.log("USER INFO: ", userInfo);
-      return userInfo;
+
+      const userDetails = await this.repository.getUserByEmail(userInfo.email);
+      if (!userDetails) {
+        return { success: false };
+      }
+
+      const permissions = await this.repository.getRolePermissions(userDetails.roleId);
+      const payload = {
+        userId: userDetails.id,
+        roleId: userDetails.roleId,
+        tenantId: userDetails.tenantId,
+      };
+      const accessToken = signAccessToken(payload);
+      const refreshToken = signRefreshToken(payload);
+      await this.repository.addRefereshToken(userDetails.id, refreshToken);
+      return {
+        success: true,
+        userDetails: { ...userDetails, permissions },
+        accessToken,
+        refreshToken,
+      };
     } catch (error) {
       throwError(error);
     }

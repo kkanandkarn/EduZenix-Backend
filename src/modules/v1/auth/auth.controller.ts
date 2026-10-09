@@ -107,6 +107,34 @@ class AuthController {
     try {
       const query = req.query as { code: string };
       const data = await this.service.googleLoginCallback(query);
+      const isSecure = process.env.NODE_ENV === "production";
+      if (data?.success) {
+        // access token in a short-lived httpOnly cookie (invisible to JS)
+        res.cookie("access_token", data?.accessToken, {
+          httpOnly: true,
+          secure: isSecure,
+          sameSite: "lax",
+          maxAge: 10 * 60, // 10 minutes
+        });
+
+        // Refresh token in a long-lived httpOnly cookie (invisible to JS)
+        res.cookie("refresh_token", data?.refreshToken, {
+          httpOnly: true,
+          secure: isSecure,
+          sameSite: "lax",
+          maxAge: 3 * 24 * 60 * 60, // 3 days
+          path: "/v1/auth/refresh", // Scoped: only sent to refresh endpoint
+        });
+        return data?.userDetails ?? {};
+      }
+
+      res.cookie("auth_error", "user_not_found", {
+        httpOnly: false, // frontend JS must be able to read it
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 1000, // 1 minute, auto-expires if never read
+        path: "/",
+      });
 
       res.redirect(REDIRECT, process.env.FRONTEND_URL!);
     } catch (error) {

@@ -63,6 +63,8 @@ class MfaService {
         throw new ErrorHandler(NOT_ACCEPTABLE, "Invalid code");
       }
       await this.repositoy.updateMfaStatus(userId, true);
+
+      await this.authRepository.updateMfaVerified(userData.id, true);
       return {
         message: SUCCESS,
       };

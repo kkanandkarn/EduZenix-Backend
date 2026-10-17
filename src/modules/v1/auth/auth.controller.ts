@@ -21,7 +21,7 @@ class AuthController {
         httpOnly: true,
         secure: isSecure,
         sameSite: "lax",
-        maxAge: 10 * 60, // 10 minutes
+        maxAge: 10 * 60 * 1000, // 10 minutes (ms)
       });
 
       // Refresh token in a long-lived httpOnly cookie (invisible to JS)
@@ -29,7 +29,7 @@ class AuthController {
         httpOnly: true,
         secure: isSecure,
         sameSite: "lax",
-        maxAge: 3 * 24 * 60 * 60, // 3 days
+        maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days (ms)
         path: "/v1/auth/refresh", // Scoped: only sent to refresh endpoint
       });
       return data?.userDetails ?? {};
@@ -39,7 +39,8 @@ class AuthController {
   }
   async profileDetails(req: Request, res: Response, next: NextFunction) {
     try {
-      return await this.service.profileDetails(req.user);
+      const data = await this.service.profileDetails(req.user);
+      return data?.userDetails ?? {};
     } catch (error) {
       next(error);
     }
@@ -55,7 +56,7 @@ class AuthController {
         httpOnly: true,
         secure: isSecure,
         sameSite: "lax",
-        maxAge: 10 * 60, // 10 minutes
+        maxAge: 10 * 60 * 1000, // 10 minutes (ms)
       });
 
       // Refresh token in a long-lived httpOnly cookie (invisible to JS)
@@ -63,7 +64,7 @@ class AuthController {
         httpOnly: true,
         secure: isSecure,
         sameSite: "lax",
-        maxAge: 3 * 24 * 60 * 60, // 3 days
+        maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days (ms)
         path: "/v1/auth/refresh", // Scoped: only sent to refresh endpoint
       });
       return {
@@ -108,13 +109,14 @@ class AuthController {
       const query = req.query as { code: string };
       const data = await this.service.googleLoginCallback(query);
       const isSecure = process.env.NODE_ENV === "production";
+
       if (data?.success) {
         // access token in a short-lived httpOnly cookie (invisible to JS)
         res.cookie("access_token", data?.accessToken, {
           httpOnly: true,
           secure: isSecure,
           sameSite: "lax",
-          maxAge: 10 * 60, // 10 minutes
+          maxAge: 10 * 60 * 1000, // 10 minutes (ms)
         });
 
         // Refresh token in a long-lived httpOnly cookie (invisible to JS)
@@ -122,10 +124,13 @@ class AuthController {
           httpOnly: true,
           secure: isSecure,
           sameSite: "lax",
-          maxAge: 3 * 24 * 60 * 60, // 3 days
+          maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days (ms)
           path: "/v1/auth/refresh", // Scoped: only sent to refresh endpoint
         });
-        return data?.userDetails ?? {};
+        const mfaRequired = data?.userDetails?.role?.requireMfa || data?.userDetails?.requireMfa;
+
+        const redirectUri = mfaRequired ? "/mfa" : "/dashboard";
+        res.redirect(REDIRECT, `${process.env.FRONTEND_URL!}${redirectUri}`);
       }
 
       res.cookie("auth_error", "user_not_found", {

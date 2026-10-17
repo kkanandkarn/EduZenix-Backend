@@ -90,6 +90,7 @@ model Users {
     requireMfa   Boolean    @default(false)
     mfaSecret    String?
     mfaCompleted Boolean    @default(false)
+    mfaVerified  Boolean    @default(false)
     refreshToken String?
     tenantId     String     @db.Uuid
     tenant       Tenants    @relation(fields: [tenantId], references: [id])

@@ -16,7 +16,7 @@ router.post("/logout", authValidator, (req, res, next) =>
 router.post("/refresh", (req, res, next) =>
   dispatcher(req, res, next, authController.refresh.bind(authController)),
 );
-router.post("/google/login", (req, res, next) =>
+router.get("/google/login", (req, res, next) =>
   dispatcher(req, res, next, authController.googleLogin.bind(authController)),
 );
 router.get("/google/callback", (req, res, next) =>

@@ -54,5 +54,11 @@ class AuthRepository {
       data: { refreshToken },
     });
   }
+  async saveUserPicture(userId: string, picture: string) {
+    await this.db.users.update({ where: { id: userId }, data: { picture } });
+  }
+  async updateMfaVerified(userId: string, mfaVerified: boolean) {
+    await this.db.users.update({ where: { id: userId }, data: { mfaVerified } });
+  }
 }
 export default AuthRepository;

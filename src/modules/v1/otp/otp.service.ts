@@ -103,6 +103,7 @@ class OtpService {
         };
         const accessToken = signAccessToken(payload);
         const refreshToken = signRefreshToken(payload);
+        await this.authRepository.updateMfaVerified(userDetails.id, false);
         return {
           message: "Otp verified successfully",
           userDetails: { ...userDetails, permissions },

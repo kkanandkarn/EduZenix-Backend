@@ -57,6 +57,7 @@ class AuthService {
       const accessToken = signAccessToken(payload);
       const refreshToken = signRefreshToken(payload);
       await this.repository.addRefereshToken(user.id, refreshToken);
+      await this.repository.updateMfaVerified(user.id, false);
       return {
         userDetails: { ...userDetails, permissions },
         accessToken,
@@ -80,6 +81,7 @@ class AuthService {
   async logout(user: RequestUser) {
     try {
       await this.repository.removeRefereshToken(user.userId);
+      await this.repository.updateMfaVerified(user.userId, false);
     } catch (error) {
       throwError(error);
     }
@@ -175,11 +177,14 @@ class AuthService {
         method: infoMethod,
         headers: infoHeaders,
       });
-      console.log("USER INFO: ", userInfo);
 
       const userDetails = await this.repository.getUserByEmail(userInfo.email);
       if (!userDetails) {
         return { success: false };
+      }
+
+      if (!userDetails.picture && userInfo.picture) {
+        await this.repository.saveUserPicture(userDetails.id, userInfo.picture);
       }
 
       const permissions = await this.repository.getRolePermissions(userDetails.roleId);
@@ -191,6 +196,7 @@ class AuthService {
       const accessToken = signAccessToken(payload);
       const refreshToken = signRefreshToken(payload);
       await this.repository.addRefereshToken(userDetails.id, refreshToken);
+      await this.repository.updateMfaVerified(userDetails.id, false);
       return {
         success: true,
         userDetails: { ...userDetails, permissions },
